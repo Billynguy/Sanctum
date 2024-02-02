@@ -54,4 +54,8 @@ def upload_batch_files(directory, bucket):
         return False
     return True
 
-upload_batch_files('./test_pictures', bucket_name_1)
+def download_file(file_name, bucket):
+    s3 = boto3.client('s3')
+    s3.download_file(bucket, file_name, file_name)
+
+download_file('cat_image.avif', bucket_name_1)

@@ -46,7 +46,12 @@ def upload_batch_files(directory, bucket):
     # Needs tagging functionality
     # Only removes directories from the folder, does not check if file is a valid image
     onlyfiles = [f for f in os.listdir(directory) if not os.path.isdir(f)]
+    output = list()
     for f in onlyfiles:
-        upload_file(os.path.join(directory, f), bucket=bucket)
+        output.append(upload_file(os.path.join(directory, f), bucket=bucket))
+    
+    if output.count(False > 0):
+        return False
+    return True
 
 upload_batch_files('./test_pictures', bucket_name_1)

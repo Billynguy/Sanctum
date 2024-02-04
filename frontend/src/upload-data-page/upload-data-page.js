@@ -49,7 +49,7 @@ class UploadDataPage extends React.Component {
                 <form onSubmit={this.handleFileSubmit}>
                     <input type="file" onChange={this.handleFileChange}></input>
                     <Button type = "submit" component="label" variant="contained" onClick = {this.handleFileSubmit} startIcon={<CloudUploadIcon />}>
-                        Choose file(s)
+                        Submit
                     </Button>
                     <p>data upload details:
                         upon upload, all data will be parsed and de-identified in compliance with HIPPA, and tokenized. When a model

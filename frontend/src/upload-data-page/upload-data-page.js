@@ -7,34 +7,39 @@ class UploadDataPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            file: null,
+            files: [],
+            uploadedFiles: []
 
         };
     }
 
     handleFileChange = (event) => {
         event.preventDefault();
-        this.setState({ file: event.target.files[0] })
+        this.setState({ files: [...event.target.files]})
         console.log('changed')
     };
 
     handleFileSubmit = (event) => {
         event.preventDefault();
-        const { file } = this.state;
+        
         const url = 'http://localhost:3000/uploadFile';
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('fileName', file.name);
-        console.log(this.state.file)
+        this.state.files.forEach((file, index) => {
+            formData.append(`file${index}`, file);
+        })
+        
         const config = {
             headers: {
                 'content-type': 'multipart/form-date',
             },
         };
-        console.log(file.name)
+        for (const pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+          }
         // axios.post(url, formData, config)
         //     .then((response) => {
         //         console.log(response.data);
+        //         this.setState({uploadedFiles: response.data.files})
         //     })
         //     .catch((error) => {
         //         console.error("Error uploading this file")
@@ -47,7 +52,7 @@ class UploadDataPage extends React.Component {
                 <h1>Data Upload</h1>
                 <p>accepted formats: csv, jpg, zip, gzip</p>
                 <form onSubmit={this.handleFileSubmit}>
-                    <input type="file" onChange={this.handleFileChange}></input>
+                    <input type="file"multiple onChange={this.handleFileChange}></input>
                     <Button type = "submit" component="label" variant="contained" onClick = {this.handleFileSubmit} startIcon={<CloudUploadIcon />}>
                         Submit
                     </Button>
@@ -58,6 +63,9 @@ class UploadDataPage extends React.Component {
                         acknowledge that you own the rights to use patient data for research.
                     </p>
                 </form>
+                {this.state.uploadedFiles.map((file, index) => (
+                    <img key = {index} src = {file} alt = {`Uploaded content ${index}`} />
+                ))}
             </div>
         );
     }

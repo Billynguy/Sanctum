@@ -1,7 +1,7 @@
 import React from "react";
-import axios from 'axios';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import "./uploadDataPage.css";
 
 class UploadDataPage extends React.Component {
     constructor(props) {
@@ -48,14 +48,14 @@ class UploadDataPage extends React.Component {
                 <p>accepted formats: csv, jpg, zip, gzip</p>
                 <form onSubmit={this.handleFileSubmit}>
                     <input type="file" onChange={this.handleFileChange}></input>
-                    <Button type = "submit" component="label" variant="contained" onClick = {this.handleFileSubmit} startIcon={<CloudUploadIcon />}>
+                    <Button type = "submit" component="label" variant="contained" onClick = {this.handleFileSubmit} startIcon={<CloudUploadIcon />} >
                         Submit
                     </Button>
-                    <p>data upload details:
-                        upon upload, all data will be parsed and de-identified in compliance with HIPPA, and tokenized. When a model
-                        is created that uses your data for training, you will receive x tokens by uploading your data, you consent to
-                        allowing the data to be used for training models and grant access rights to Sanctum. By uploading, you
-                        acknowledge that you own the rights to use patient data for research.
+                    <p><b>Data upload details:</b> Upon upload, all datasets will be parsed and de-identified in compliance with 
+                    HIPPA, and tokenized. When a created model uses your dataset(s) for training, you will receive some <i>x</i> number of 
+                        tokens for compensation. By uploading your dataset(s), you consent to allowing comprehensive data usage
+                        rights to Sanctum, for the purposes of model training and marketplace commerce. You also acknowledge 
+                        that you own the rights to use patient data for research.
                     </p>
                 </form>
             </div>

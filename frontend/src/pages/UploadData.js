@@ -2,6 +2,7 @@ import React from "react";
 import axios from 'axios';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import BasicMenu from "../components/BasicMenu";
 
 class UploadDataPage extends React.Component {
     constructor(props) {
@@ -49,6 +50,7 @@ class UploadDataPage extends React.Component {
     render() {
         return (
             <div>
+                <BasicMenu></BasicMenu>
                 <h1>Data Upload</h1>
                 <p>accepted formats: csv, jpg, zip, gzip</p>
                 <form onSubmit={this.handleFileSubmit}>

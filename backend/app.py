@@ -1,17 +1,28 @@
 import boto3
+from flask import Flask, jsonify, request
 import logging
 import os
 from botocore.exceptions import ClientError
 
 bucket_name_1 = "bucket-for-testing-boto3"
 
+app = Flask(__name__)
+
+# Test route on root path
+@app.route('/')
+def serve_react_app():
+    return jsonify(list_existing_buckets())
+
+# Functions
+
 def list_existing_buckets():
     s3 = boto3.client('s3')
     response = s3.list_buckets()
 
-    print('Existing Buckets:')
+    buckets = list()
     for bucket in response['Buckets']:
-        print(f'    {bucket["Name"]}')
+        buckets.append(bucket["Name"])
+    return buckets
 
 def create_bucket(bucket_name, region=None):
     try:
@@ -60,4 +71,5 @@ def download_file(file_name, bucket):
     s3 = boto3.client('s3')
     s3.download_file(bucket, file_name, file_name)
 
-download_file('cat_image.avif', bucket_name_1)
+if __name__ == '__main__':
+    app.run()

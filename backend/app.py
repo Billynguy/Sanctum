@@ -1,75 +1,106 @@
 import boto3
-from flask import Flask, jsonify, request
 import logging
 import os
 from botocore.exceptions import ClientError
+from flask import Flask, jsonify, request
+from zipfile import ZipFile
 
-bucket_name_1 = "bucket-for-testing-boto3"
+main_bucket = "bucket-for-testing-boto3"
+zip_temp = "zip_temp"
 
 app = Flask(__name__)
 
 # Test route on root path
-@app.route('/')
-def serve_react_app():
+# Input: None
+# Output: List of existing buckets
+@app.route('/', methods=['GET'])
+def test_function():
     return jsonify(list_existing_buckets())
 
-# Functions
+# Downloads the specified image to the user's current directory
+# Input: file: file to download
+# Output: Bool
+@app.route('/download', methods=['POST'])
+def download_file():
+    data = request.get_json()
+    
+    if 'file' in data:
+        try:
+            success = download_file(data['file'], main_bucket)
+            return jsonify(success)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "Incorrect input format"}), 400
+    
+# Uploads an array of files to the database
+# Input: files: Array of files
+# Output: Bool
+@app.route('/upload_files', methods=['POST'])
+def upload_files():
+    data = request.get_json()
 
+    if 'files' in data:
+        try:
+            success = upload_files(data['files'], main_bucket)
+            return jsonify(success)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "Incorrect input format"}), 400
+## Functions
+
+# Test file, displays an array of all existing buckets
 def list_existing_buckets():
-    s3 = boto3.client('s3')
-    response = s3.list_buckets()
+    s3_client = boto3.client('s3')
+    response = s3_client.list_buckets()
 
     buckets = list()
     for bucket in response['Buckets']:
         buckets.append(bucket["Name"])
     return buckets
 
-def create_bucket(bucket_name, region=None):
-    try:
-        if region is None:
-            s3_client = boto3.client('s3')
-            s3_client.create_bucket(Bucket=bucket_name)
-        else:
-            s3_client = boto3.client('s3', region_name=region)
-            location = {'LocationContraint': region}
-            s3_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration=location)
-    
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
-
-def upload_file(file_name, bucket, object_name=None):
-    # if the object name is not specified, use the file name
-    if object_name is None:
-        object_name = os.path.basename(file_name)
-    
-    boto3.setup_default_session(profile_name='dev')
+# Accepts an array of files to upload to the 
+def upload_files(file_arr, bucket):    
+    boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
+        for file in file_arr:
+            if file.endswith(".zip"):
+                unzip_files(file)
+            else:
+                s3_client.upload_file(file, bucket, file)
+        for dir_, _, files in os.walk(zip_temp):
+            for file in files:
+                path = os.path.join(dir_,file)
+                s3_client.upload_file(path, bucket, file)
+                os.remove(path)
     except ClientError as e:
         logging.error(e)
         return False
     return True
 
-def upload_batch_files(directory, bucket):
-    # Accepts a directory name rather than a single file name
-    # Needs tagging functionality
-    # Only removes directories from the folder, does not check if file is a valid image
-    onlyfiles = [f for f in os.listdir(directory) if not os.path.isdir(f)]
-    output = list()
-    for f in onlyfiles:
-        output.append(upload_file(os.path.join(directory, f), bucket=bucket))
-    
-    if output.count(False > 0):
-        return False
-    return True
+# Handles uploads when a directory is passed
+def upload_dir(directory, bucket):
+    cmd = 'aws s3 sync ' + directory + ' s3://' + bucket + ' --profile dev'
+    print(cmd)
+    os.system(cmd)
 
+# Downloads a file into the user's current directory
 def download_file(file_name, bucket):
     boto3.setup_default_session(profile_name='dev')
     s3 = boto3.client('s3')
-    s3.download_file(bucket, file_name, file_name)
+    try:
+        s3.download_file(bucket, file_name, file_name)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
+# internal function that handles zip files. Uses temporary folder zip_temp
+def unzip_files(file_name):
+    with ZipFile(file_name, 'r') as zip:
+        zip.extractall(zip_temp)
 
 if __name__ == '__main__':
     app.run()

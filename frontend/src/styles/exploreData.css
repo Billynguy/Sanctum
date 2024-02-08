@@ -1,0 +1,36 @@
+.data-grid-container {
+    height: 100%;
+    width: 70%;
+}
+
+.header {
+    color: black;
+    font-style: italic;
+}
+
+.search-box {
+    border-radius: 20px;
+    padding: 8px;
+    margin-bottom: 16px;
+}
+
+.search-box input {
+    background-color: #f0f0f0;
+    width: 20%;
+    border: none;
+    padding: 8px;
+    border-radius: 20px;
+    outline: none;
+    font-style: italic;
+    text-align: left;
+}
+
+.search-box input::placeholder {
+    text-align: center;
+}
+
+.no-results {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #555;
+}

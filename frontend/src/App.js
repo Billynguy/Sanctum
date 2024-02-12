@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from "./pages/Signup";
 import UploadData from './pages/UploadData';
 import ExploreData from './pages/ExploreData';
+// import './App.css';
 
 function App() {
   return (

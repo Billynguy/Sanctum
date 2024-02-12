@@ -21,7 +21,6 @@ class UploadData extends React.Component {
 
     handleFileSubmit = (event) => {
         event.preventDefault();
-        
         const url = 'http://localhost:3000/uploadFile';
         const formData = new FormData();
         this.state.files.forEach((file, index) => {
@@ -30,20 +29,20 @@ class UploadData extends React.Component {
         
         const config = {
             headers: {
-                'content-type': 'multipart/form-date',
+                'content-type': 'multipart/form-data',
             },
         };
         for (const pair of formData.entries()) {
             console.log(pair[0], pair[1]);
           }
-        // axios.post(url, formData, config)
-        //     .then((response) => {
-        //         console.log(response.data);
-        //         this.setState({uploadedFiles: response.data.files})
-        //     })
-        //     .catch((error) => {
-        //         console.error("Error uploading this file")
-        //     });
+        axios.post(url, formData, config)
+            .then((response) => {
+                console.log(response.data);
+                this.setState({uploadedFiles: response.data.files})
+            })
+            .catch((error) => {
+                console.error("Error uploading this file")
+            });
 
     };
     render() {

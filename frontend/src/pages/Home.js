@@ -5,7 +5,7 @@ function Home() {
   return (
     <div>
       <BasicMenu />
-      <h1>welcome home :D</h1>
+      <h1>Welcome to Sanctum</h1>
     </div>
   );
 }

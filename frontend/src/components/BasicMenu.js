@@ -39,7 +39,7 @@ export default function BasicMenu() {
             <Link to="/">Home</Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
-            <Link to="/login">Login</Link>
+            <Link to="/login">Log In</Link>
           </MenuItem>
           <MenuItem onClick={handleClose}>
             <Link to="/upload">Upload Data</Link>

@@ -1,0 +1,33 @@
+.centered-login-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.credential-input {
+    margin: 0px 20px 15px 0px;
+    height: 40px;
+    width: 250px;
+    padding-left: 10px;
+    border-style: none;
+    outline: none;
+    border-radius: 10px;
+    font-size: 18px;
+    /* Google Font  */
+    font-family: 'Work Sans', sans-serif;
+    color: white;
+    background-color: rgba(200, 158, 255, 0.7);
+}
+
+.credential-input::placeholder {
+    color: rgb(220, 194, 255);
+}
+
+.sign-up-button {
+    text-decoration: none;
+}
+
+.sign-up-button:hover {
+    font-weight: bold;
+}

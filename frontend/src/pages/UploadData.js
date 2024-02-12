@@ -1,5 +1,6 @@
 import React from "react";
 import Button from '@mui/material/Button';
+// import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import BasicMenu from "../components/BasicMenu";
 
@@ -35,14 +36,14 @@ class UploadData extends React.Component {
         for (const pair of formData.entries()) {
             console.log(pair[0], pair[1]);
           }
-        axios.post(url, formData, config)
-            .then((response) => {
-                console.log(response.data);
-                this.setState({uploadedFiles: response.data.files})
-            })
-            .catch((error) => {
-                console.error("Error uploading this file")
-            });
+        // axios.post(url, formData, config)
+        //     .then((response) => {
+        //         console.log(response.data);
+        //         this.setState({uploadedFiles: response.data.files})
+        //     })
+        //     .catch((error) => {
+        //         console.error("Error uploading this file")
+        //     });
 
     };
     render() {

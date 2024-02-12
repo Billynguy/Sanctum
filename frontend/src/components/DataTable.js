@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import '../styles/exploreData.css';
+import '../styles/dataTable.css';
 
 const mockData = [
     { id: 1, name: 'Dataset A', format: 'JPEG', ageRange: '30-40', gender: 'M', location: 'USA', size: '10 MB' },
@@ -50,7 +50,7 @@ function DataTable(){
             <div className="search-box">
                 <input
                     type="text"
-                    placeholder="keyword search"
+                    placeholder="Keyword search"
                     value={searchTerm}
                     onChange={handleSearchInputChange}
                 />

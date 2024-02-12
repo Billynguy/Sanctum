@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 // import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import BasicMenu from "../components/BasicMenu";
+import "../styles/uploadData.css";
 
 class UploadData extends React.Component {
     constructor(props) {
@@ -51,16 +52,16 @@ class UploadData extends React.Component {
             <div>
                 <BasicMenu/>
                 <h1>Data Upload</h1>
-                <p>accepted formats: csv, jpg, zip, gzip</p>
+                <p>Accepted formats: csv, jpg, zip, gzip</p>
                 <form onSubmit={this.handleFileSubmit}>
                     <input type="file"multiple onChange={this.handleFileChange}></input>
                     <Button type = "submit" component="label" variant="contained" onClick = {this.handleFileSubmit} startIcon={<CloudUploadIcon />}>
                         Submit
                     </Button>
-                    <p>data upload details:
-                        upon upload, all data will be parsed and de-identified in compliance with HIPPA, and tokenized. When a model
+                    <p>Data upload details:
+                        Upon upload, all data will be parsed and de-identified in compliance with HIPPA, and tokenized. When a model
                         is created that uses your data for training, you will receive x tokens by uploading your data, you consent to
-                        allowing the data to be used for training models and grant access rights to Sanctum. By uploading, you
+                        allowing the data to be used for training models and grant access rights to Sanctum. <br></br> <br></br> By uploading, you
                         acknowledge that you own the rights to use patient data for research.
                     </p>
                 </form>

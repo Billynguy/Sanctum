@@ -16,12 +16,12 @@
     font-size: 18px;
     /* Google Font  */
     font-family: 'Work Sans', sans-serif;
-    color: white;
-    background-color: rgba(200, 158, 255, 0.7);
+    background-color: rgba(230, 230, 230, 0.7);
+    color: rgb(199,106,255);
 }
 
 .credential-input::placeholder {
-    color: rgb(220, 194, 255);
+    color: gray;
 }
 
 .sign-up-button {

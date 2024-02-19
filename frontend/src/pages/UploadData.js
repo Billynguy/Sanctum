@@ -1,6 +1,6 @@
 import React from "react";
 import Button from '@mui/material/Button';
-// import axios from 'axios';
+import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import BasicMenu from "../components/BasicMenu";
 import "../styles/uploadData.css";
@@ -23,10 +23,10 @@ class UploadData extends React.Component {
 
     handleFileSubmit = (event) => {
         event.preventDefault();
-        const url = 'http://localhost:3000/uploadFile';
+        const url = 'http://localhost:5000/upload';
         const formData = new FormData();
         this.state.files.forEach((file, index) => {
-            formData.append(`file${index}`, file);
+            formData.append('files', file);
         })
         
         const config = {
@@ -37,14 +37,22 @@ class UploadData extends React.Component {
         for (const pair of formData.entries()) {
             console.log(pair[0], pair[1]);
           }
-        // axios.post(url, formData, config)
-        //     .then((response) => {
-        //         console.log(response.data);
-        //         this.setState({uploadedFiles: response.data.files})
-        //     })
-        //     .catch((error) => {
-        //         console.error("Error uploading this file")
-        //     });
+          axios.interceptors.request.use(function (config) {
+            // Log the request before sending
+            console.log('Request:', config);
+            return config;
+          }, function (error) {
+            // Do something with request error
+            return Promise.reject(error);
+          });
+        axios.post(url, formData, config)
+            .then((response) => {
+                console.log(response.data);
+                this.setState({uploadedFiles: response.data.files})
+            })
+            .catch((error) => {
+                console.error("Error uploading this file")
+            });
 
     };
     render() {

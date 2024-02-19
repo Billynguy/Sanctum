@@ -44,11 +44,18 @@ def download_files():
 # Output: Bool
 @app.route('/upload', methods=['POST'])
 def upload_files():
-    data = request.get_json()
-
-    if 'files' in data:
+    
+    #data = request.get_json()
+    
+    if 'files' in request.files:
         try:
-            success = upload_files(data['files'], main_bucket)
+            files = request.files.getlist('files')
+            uploaded_files = []
+            for file in files:
+                uploaded_files.append(file.filename)
+            print(files)
+            #success = upload_files(data['files'], main_bucket)
+            success = upload_files(uploaded_files, main_bucket)
             return jsonify(success)
         except Exception as e:
             return jsonify({"error": str(e)}), 500

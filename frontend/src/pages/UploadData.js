@@ -48,7 +48,7 @@ class UploadData extends React.Component {
         axios.post(url, formData, config)
             .then((response) => {
                 console.log(response.data);
-                this.setState({uploadedFiles: response.data.files})
+                // this.setState({uploadedFiles: response.data.files})
             })
             .catch((error) => {
                 console.error("Error uploading this file")

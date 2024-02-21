@@ -1,4 +1,5 @@
 import boto3
+from flask_cors import CORS
 import logging
 import os
 import shutil
@@ -10,6 +11,7 @@ zip_temp = "zip_temp"
 download_temp = "Sanctum_Images"
 
 app = Flask(__name__)
+CORS(app) # fixes the CORS issue on message return
 
 # Test route on root path
 # Input: None

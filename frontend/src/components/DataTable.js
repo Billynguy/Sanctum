@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import '../styles/dataTable.css';
 
@@ -37,6 +37,33 @@ function DataTable(){
         setSearchTerm(event.target.value);
     };
 
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Fetch data from your API or backend
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/');
+                const data = await response.json();
+                console.log(data)
+                setData(data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // const filteredRows = data.filter(row =>
+    //     Object.values(row).some(value =>
+    //         typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+    //     )
+    // );
+
     const filteredRows = mockData.filter(row =>
         Object.values(row).some(value =>
             typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,7 +80,9 @@ function DataTable(){
                     onChange={handleSearchInputChange}
                 />
             </div>
-            {filteredRows.length > 0 ? (
+            {loading ? (
+                <div>Loading...</div>
+            ) : filteredRows.length > 0 ? (
                 <DataGrid
                     rows={filteredRows}
                     columns={columns}

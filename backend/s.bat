@@ -20,6 +20,11 @@ if %errorlevel% neq 0 (
     pip install --upgrade Flask
 )
 
+pip show flask-cors > nul 2>&1
+if %errorlevel% neq 0 (
+    pip install --upgrade flask-cors
+)
+
 call aws sso login --profile dev
 
 echo Starting server...

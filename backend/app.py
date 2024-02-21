@@ -5,6 +5,8 @@ import shutil
 from botocore.exceptions import ClientError
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
+from zipfile import ZipFile
+from io import BytesIO
 
 main_bucket = "bucket-for-testing-boto3"
 zip_temp = "zip_temp"
@@ -47,16 +49,9 @@ def download_files():
 @app.route('/upload', methods=['POST'])
 def upload_files():
     
-    #data = request.get_json()
-    
     if 'files' in request.files:
         try:
             files = request.files.getlist('files')
-            # uploaded_files = []
-            # for file in files:
-            #     uploaded_files.append(file.filename)
-            # print(uploaded_files)
-            #success = upload_files(data['files'], main_bucket)
             success = upload_files(files, main_bucket)
             return jsonify(success)
         except Exception as e:
@@ -81,19 +76,18 @@ def upload_files(file_arr, bucket):
     s3_client = boto3.client('s3')
     try:
         for file in file_arr:
+
             if file.filename.endswith(".zip"):
                 unzip_files(file)
             elif os.path.isdir(file.filename):
                 upload_dir(file, bucket)
             else:
-                #print(file.filename)
-                # with open(file, 'rb') as data:
                 s3_client.upload_fileobj(file, bucket, file.filename)
         if (os.path.exists(zip_temp)):
             for dir_, _, files in os.walk(zip_temp): # walk avoids the issue of uploading directories
                 for file in files:
-                    path = os.path.join(dir_,file.filename)
-                    s3_client.upload_fileobj(path, bucket, file)
+                    path = os.path.join(dir_,file)
+                    s3_client.upload_file(path, bucket, file)
             shutil.rmtree(zip_temp)
     except ClientError as e:
         logging.error(e)
@@ -133,7 +127,16 @@ def download_files(file_arr, bucket):
 
 # internal function that handles zip files. Uses temporary folder zip_temp
 def unzip_files(file_name):
-    shutil.unpack_archive(file_name, zip_temp)
+    #shutil.unpack_archive(file_name, zip_temp)
+    # Get the bytes data from the FileStorage object
+    file_bytes = file_name.read()
+
+    # Create a BytesIO object to treat the bytes data as a file
+    file_like_object = BytesIO(file_bytes)
+
+    # Use ZipFile to extract the contents of the archive
+    with ZipFile(file_like_object, 'r') as zip_ref:
+        zip_ref.extractall(zip_temp)
 
 if __name__ == '__main__':
     app.run(debug=True)

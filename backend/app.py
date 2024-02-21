@@ -52,10 +52,10 @@ def upload_files():
     if 'files' in request.files:
         try:
             files = request.files.getlist('files')
-            uploaded_files = []
-            for file in files:
-                uploaded_files.append(file.filename)
-            print(uploaded_files)
+            # uploaded_files = []
+            # for file in files:
+            #     uploaded_files.append(file.filename)
+            # print(uploaded_files)
             #success = upload_files(data['files'], main_bucket)
             success = upload_files(files, main_bucket)
             return jsonify(success)
@@ -92,8 +92,8 @@ def upload_files(file_arr, bucket):
         if (os.path.exists(zip_temp)):
             for dir_, _, files in os.walk(zip_temp): # walk avoids the issue of uploading directories
                 for file in files:
-                    path = os.path.join(dir_,file)
-                    s3_client.upload_file(path, bucket, file)
+                    path = os.path.join(dir_,file.filename)
+                    s3_client.upload_fileobj(path, bucket, file)
             shutil.rmtree(zip_temp)
     except ClientError as e:
         logging.error(e)

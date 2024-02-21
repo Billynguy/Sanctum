@@ -3,27 +3,25 @@ import { DataGrid } from '@mui/x-data-grid';
 import '../styles/dataTable.css';
 
 const mockData = [
-    { id: 1, name: 'Dataset A', format: 'JPEG', ageRange: '30-40', gender: 'M', location: 'USA', size: '10 MB' },
-    { id: 2, name: 'Dataset B', format: 'PNG', ageRange: '20-30', gender: 'F', location: 'Canada', size: '15 MB' },
-    { id: 3, name: 'Dataset C', format: 'GIF', ageRange: '40-50', gender: 'M', location: 'UK', size: '20 MB' },
-    { id: 4, name: 'Dataset D', format: 'TIFF', ageRange: '30-40', gender: 'F', location: 'Australia', size: '12 MB' },
-    { id: 5, name: 'Dataset E', format: 'BMP', ageRange: '40-50', gender: 'M', location: 'Germany', size: '18 MB' },
-    { id: 6, name: 'Dataset F', format: 'JPEG', ageRange: '25-35', gender: 'F', location: 'USA', size: '8 MB' },
-    { id: 7, name: 'Dataset G', format: 'PNG', ageRange: '35-45', gender: 'M', location: 'Canada', size: '16 MB' },
-    { id: 8, name: 'Dataset H', format: 'GIF', ageRange: '20-30', gender: 'F', location: 'UK', size: '22 MB' },
-    { id: 9, name: 'Dataset I', format: 'TIFF', ageRange: '30-40', gender: 'M', location: 'Australia', size: '14 MB' },
-    { id: 10, name: 'Dataset J', format: 'BMP', ageRange: '40-50', gender: 'F', location: 'Germany', size: '20 MB' },
-    { id: 11, name: 'Dataset K', format: 'JPEG', ageRange: '35-45', gender: 'M', location: 'USA', size: '11 MB' },
-    { id: 12, name: 'Dataset L', format: 'PNG', ageRange: '20-30', gender: 'F', location: 'Canada', size: '17 MB' }
+    { id: 1, name: 'Dataset A', description: 'Description 1', format: 'JPEG', size: '10 MB' },
+    { id: 2, name: 'Dataset B', description: 'This is Dataset B', format: 'PNG', size: '15 MB' },
+    { id: 3, name: 'Dataset C', description: 'Another dataset here', format: 'GIF', size: '20 MB' },
+    { id: 4, name: 'Dataset D', description: 'Dataset D with some description', format: 'TIFF', size: '12 MB' },
+    { id: 5, name: 'Dataset E', description: 'Description of Dataset E', format: 'BMP', size: '18 MB' },
+    { id: 6, name: 'Dataset F', description: 'Description for Dataset F', format: 'JPEG', size: '8 MB' },
+    { id: 7, name: 'Dataset G', description: 'Description of G dataset', format: 'PNG', size: '16 MB' },
+    { id: 8, name: 'Dataset H', description: 'Description for Dataset H', format: 'GIF', size: '22 MB' },
+    { id: 9, name: 'Dataset I', description: 'Some details about Dataset I', format: 'TIFF', size: '14 MB' },
+    { id: 10, name: 'Dataset J', description: 'Description of Dataset J', format: 'BMP', size: '20 MB' },
+    { id: 11, name: 'Dataset K', description: 'K dataset description', format: 'JPEG', size: '11 MB' },
+    { id: 12, name: 'Dataset L', description: 'Description for Dataset L', format: 'PNG', size: '17 MB' }
 ];
 
 const columns = [
-    { field: 'name', headerName: 'Name', width: 300 },
-    { field: 'format', headerName: 'Format', width: 150 },
-    { field: 'ageRange', headerName: 'Age', width: 150 },
-    { field: 'gender', headerName: 'Gender', width: 150 },
-    { field: 'location', headerName: 'Location', width: 200 },
-    { field: 'size', headerName: 'Size', width: 120 },
+    { field: 'name', headerName: 'Name', flex: 0.50 },
+    { field: 'description', headerName: 'Format', flex: 2},
+    { field: 'format', headerName: 'Format', flex: 0.25 },
+    { field: 'size', headerName: 'Size', flex: 0.25 },
 ];
 
 function DataTable(){

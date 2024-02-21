@@ -20,7 +20,7 @@ if %errorlevel% neq 0 (
     pip install --upgrade Flask
 )
 
-call aws configure sso
+call aws sso login --profile dev
 
 echo Starting server...
 python app.py

@@ -59,6 +59,7 @@ def upload_files():
 # Test file, displays an array of all existing buckets
 def list_existing_buckets():
     s3_client = boto3.client('s3')
+    boto3.setup_default_session(profile_name="dev")
     response = s3_client.list_buckets()
 
     buckets = list()

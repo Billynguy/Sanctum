@@ -1,8 +1,11 @@
+# import sys
+# import threading
 import boto3
 import logging
 import os
 import shutil
 from botocore.exceptions import ClientError
+from boto3.s3.transfer import TransferConfig
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from zipfile import ZipFile
@@ -92,32 +95,43 @@ def list_existing_buckets():
 # Accepts an array of files to upload to the 
 def upload_files(file_arr, bucket):    
     boto3.setup_default_session(profile_name="dev")
-    s3_client = boto3.client('s3')
+    # s3_client = boto3.client('s3')
+    # config = TransferConfig(multipart_threshold=1024*25, max_concurrency=10,
+    #                     multipart_chunksize=1024*25, use_threads=True)
     try:
-        for file in file_arr:
-
-            if file.filename.endswith(".zip"):
-                unzip_files(file)
-            elif os.path.isdir(file.filename):
-                upload_dir(file, bucket)
-            else:
-                s3_client.upload_fileobj(file, bucket, file.filename)
-        if (os.path.exists(zip_temp)):
-            for dir_, _, files in os.walk(zip_temp): # walk avoids the issue of uploading directories
-                for file in files:
-                    path = os.path.join(dir_,file)
-                    s3_client.upload_file(path, bucket, file)
-            shutil.rmtree(zip_temp)
-    except ClientError as e:
+        # if os.path.exists(download_temp + ".zip"): # remove old zip file if it exists
+        #     os.remove(download_temp + ".zip")
+        zip_buffer = BytesIO()
+        zip_file_name = ""
+        with ZipFile(zip_buffer, 'w') as zip_file:
+            for file in file_arr:
+                if file.filename.endswith(".zip"):
+                    # s3_client.upload_fileobj(file, bucket, file.filename, Config=config, Callback=ProgressPercentage(file))
+                    directory = "./"
+                    local_path = os.path.join(directory, file.filename)
+                    file.save(local_path)
+                    cmd = 'aws s3 cp ' + local_path + ' s3://' + bucket + ' --profile dev --no-parallel'
+                    os.system(cmd)
+                else:
+                    if len(zip_file_name)==0: 
+                        zip_file_name = file.filename
+                    file_content = file.read()
+                    zip_file.writestr(file.filename, file_content)
+        if not len(zip_file_name) == 0:
+            # s3_client.upload_fileobj(zip_buffer, bucket, zip_file_name+".zip", Config=config, Callback=ProgressPercentage(file))
+            directory = "./"
+            cmd = 'aws s3 cp ' + directory + ' s3://' + bucket + ' --profile dev'
+            os.system(cmd)
+    except Exception as e:
         logging.error(e)
         return False
     return True
 
 # Handles uploads when a directory is passed
-def upload_dir(directory, bucket):
-    cmd = 'aws s3 sync ' + directory + ' s3://' + bucket + ' --profile dev'
-    print(cmd)
-    os.system(cmd)
+# def upload_dir(directory, bucket):
+#     cmd = 'aws s3 sync ' + directory + ' s3://' + bucket + ' --profile dev'
+#     print(cmd)
+#     os.system(cmd)
 
 # Downloads a file into the temporary folder download_temp, then zips it up and deletes the original
 def download_files(file_arr, bucket):
@@ -144,18 +158,6 @@ def download_files(file_arr, bucket):
     shutil.rmtree(download_temp)
     return not_found
 
-# internal function that handles zip files. Uses temporary folder zip_temp
-def unzip_files(file_name):
-    #shutil.unpack_archive(file_name, zip_temp)
-    # Get the bytes data from the FileStorage object
-    file_bytes = file_name.read()
-
-    # Create a BytesIO object to treat the bytes data as a file
-    file_like_object = BytesIO(file_bytes)
-
-    # Use ZipFile to extract the contents of the archive
-    with ZipFile(file_like_object, 'r') as zip_ref:
-        zip_ref.extractall(zip_temp)
 
 if __name__ == '__main__':
     app.run(debug=True)

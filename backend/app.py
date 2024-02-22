@@ -22,6 +22,18 @@ CORS(app)
 def test_function():
     return jsonify(list_existing_buckets())
 
+@app.route('/display', methods=['GET'])
+def display_all():
+    buckets = list_existing_buckets()
+    bucket = buckets[0]
+    top_level_folders = list()
+    client = boto3.client('s3')
+    paginator = client.get_paginator('list_objects')
+    result = paginator.paginate(Bucket=bucket, Delimiter='/')
+    for prefix in result.search('CommonPrefixes'):
+        top_level_folders.append(prefix.get('Prefix'))
+    return top_level_folders
+
 # Downloads an array of images from s3 bucket and sends them to frontend
 # Input: files: Array of files to download
 # Output: Zipped up directory containing downloaded files, 
@@ -62,6 +74,7 @@ def upload_files():
 
 # Test file, displays an array of all existing buckets
 def list_existing_buckets():
+    boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     response = s3_client.list_buckets()
 

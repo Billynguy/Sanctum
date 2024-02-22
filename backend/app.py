@@ -24,14 +24,20 @@ def test_function():
 
 @app.route('/display', methods=['GET'])
 def display_all():
-    buckets = list_existing_buckets()
-    bucket = buckets[0]
     top_level_folders = list()
-    client = boto3.client('s3')
-    paginator = client.get_paginator('list_objects')
-    result = paginator.paginate(Bucket=bucket, Delimiter='/')
-    for prefix in result.search('CommonPrefixes'):
-        top_level_folders.append(prefix.get('Prefix'))
+    buckets = list_existing_buckets()
+    if len(buckets) == 0:
+        return jsonify({"error": "No buckets found"})
+    else:
+        bucket = buckets[0]
+        client = boto3.client('s3')
+        paginator = client.get_paginator('list_objects')
+        result = paginator.paginate(Bucket=bucket, Delimiter='/')
+    try:
+        for prefix in result.search('CommonPrefixes'):
+            top_level_folders.append(prefix.get('Prefix'))
+    except Exception as e: 
+        return jsonify({"error": f"{str(e)} - No prefixes found, bucket likely empty."})
     return top_level_folders
 
 # Downloads an array of images from s3 bucket and sends them to frontend

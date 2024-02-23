@@ -2,7 +2,7 @@ import React from "react";
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import BasicMenu from "../components/BasicMenu";
+import Menu from "../components/Menu";
 import "../styles/uploadData.css";
 
 class UploadData extends React.Component {
@@ -65,7 +65,7 @@ class UploadData extends React.Component {
     render() {
         return (
             <div class="wholeDataPage">
-                <BasicMenu />
+                <Menu />
                 <div class="title">
                     <h1>Data Upload</h1>
                     

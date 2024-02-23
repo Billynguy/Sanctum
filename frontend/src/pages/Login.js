@@ -1,53 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import Menu from "../components/Menu";
 import "../styles/loginSignup.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from '@mui/material/Button';
 
-class Login extends React.Component {
+const Login = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: 'username',
-            password: 'password'
-        };
-    }
-
-    handleUsername = (event) => {
-        event.preventDefault();
-        this.setState({ username: event.target.value });
+    const handleUsername = (event) => {
+        console.log(event.target.value)
+        setUsername(event.target.value);
     };
 
-    handlePassword = (event) => {
-        event.preventDefault();
-        this.setState({ password: event.target.value });
+    const handlePassword = (event) => {
+        console.log(event.target.value)
+        setPassword(event.target.value);
     };
 
-    handleLogIn = (event) => {
+    const handleLogIn = (event) => {
         event.preventDefault();
         // TODO: send credentials to backend for login verification
     };
 
-    render() {
-        return (
-            <div>
-                {/* <BasicMenu/> */}
-                <Menu/>
-                <div class="centered-login-form">
-                    <h1>Enter Sanctum</h1>
-                    <input class="credential-input" type="text" placeholder="Enter username..." onChange={this.handleUsername}/>
-                    <br></br>
-                    <input class="credential-input" type="password" placeholder="Enter password..." onChange={this.handlePassword}/>
-                    <br></br>
-                    <Button type = "submit" component="label" variant="contained" /*onClick = {this.handleLogIn}*/>
-                        LOG IN
-                    </Button>
-                    <p>Don't have an account? <Link to="/signup" class="sign-up-button">Sign up</Link></p>
-                </div>
+    return (
+        <div>
+            <Menu />
+            <div className="centered-login-form">
+                <h1>Enter Sanctum</h1>
+                <input className="credential-input" type="text" placeholder="Enter username..." value={username} onChange={handleUsername} />
+                <br />
+                <input className="credential-input" type="password" placeholder="Enter password..." value={password} onChange={handlePassword} />
+                <br />
+                <Button type="submit" component="label" variant="contained" onClick={handleLogIn}>
+                    LOG IN
+                </Button>
+                <p>Don't have an account? <Link to="/signup" className="sign-up-button">Sign up</Link></p>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default Login;

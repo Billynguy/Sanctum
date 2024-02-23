@@ -3,27 +3,27 @@ import { DataGrid } from '@mui/x-data-grid';
 import '../styles/dataTable.css';
 
 const columns = [
-    { field: 'name', headerName: 'Name', flex: 0.50 },
+    { field: 'name', headerName: 'Name', flex: 1 },
     { field: 'description', headerName: 'Format', flex: 2},
+    { field: 'tags', headerName: 'Tags', flex: 0.50},
     { field: 'format', headerName: 'Format', flex: 0.25 },
     { field: 'size', headerName: 'Size', flex: 0.25 },
+    { field: 'modified', headerName: 'Last Modified', flex: 0.50 },
 ];
 
 function DataTable(){
+    const [searchTerm, setSearchTerm] = useState('');
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const initialPaginationState = {
         pagination: {
             paginationModel: { page: 0, pageSize: 10 },
         },
     };
 
-    const [searchTerm, setSearchTerm] = useState('');
-
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
     };
-
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,8 +34,9 @@ function DataTable(){
                     id: index + 1,
                     name: name,
                     description: `Description for ${name}`,
-                    format: 'N/A',
-                    size: 'N/A'
+                    format: 'TBD',
+                    size: 'TBD',
+                    tags: 'TBD'
                 }));
                 setData(data);
                 setLoading(false);

@@ -1,5 +1,4 @@
 import React from "react";
-import BasicMenu from "../components/BasicMenu";
 import Menu from "../components/Menu";
 import "../styles/loginSignup.css";
 import {Link} from "react-router-dom";

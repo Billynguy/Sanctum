@@ -65,7 +65,7 @@ class UploadData extends React.Component {
     render() {
         return (
             <div class="wholeDataPage">
-                <BasicMenu />
+                <Menu />
                 <div class="title">
                     <h1>Data Upload</h1>
                     

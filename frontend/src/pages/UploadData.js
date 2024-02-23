@@ -88,7 +88,7 @@ class UploadData extends React.Component {
                                 <ul>
                                     <li>Name: {file.name}</li>
                                     <li>Type: {file.type}</li>
-                                    <li>Size: {file.size} bytes</li>
+                                    <li>Size: {(file.size / (1024 * 1024)).toFixed(2)} MB</li>
                                 </ul>
                             </section>
                         ))}

@@ -98,15 +98,10 @@ def upload_files(file_arr, bucket):
 
             if file.filename.endswith(".zip"):
                 unzip_files(file)
-            elif os.path.isdir(file.filename):
-                upload_dir(file, bucket)
             else:
                 s3_client.upload_fileobj(file, bucket, file.filename)
         if (os.path.exists(zip_temp)):
-            for dir_, _, files in os.walk(zip_temp): # walk avoids the issue of uploading directories
-                for file in files:
-                    path = os.path.join(dir_,file)
-                    s3_client.upload_file(path, bucket, file)
+            upload_dir(zip_temp, bucket)
             shutil.rmtree(zip_temp)
     except ClientError as e:
         logging.error(e)

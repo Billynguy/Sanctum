@@ -2,7 +2,7 @@ import React from "react";
 import Button from '@mui/material/Button';
 // import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import BasicMenu from "../components/BasicMenu";
+import Menu from "../components/Menu";
 import "../styles/uploadData.css";
 
 class UploadData extends React.Component {
@@ -11,7 +11,6 @@ class UploadData extends React.Component {
         this.state = {
             files: [],
             uploadedFiles: []
-
         };
     }
 
@@ -50,7 +49,7 @@ class UploadData extends React.Component {
     render() {
         return (
             <div>
-                <BasicMenu/>
+                <Menu/>
                 <h1>Data Upload</h1>
                 <p>Accepted formats: csv, jpg, zip, gzip</p>
                 <form onSubmit={this.handleFileSubmit}>

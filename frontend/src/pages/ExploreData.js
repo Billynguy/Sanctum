@@ -1,11 +1,11 @@
 import React from 'react';
-import BasicMenu from '../components/BasicMenu';
+import Menu from '../components/Menu';
 import DataTable from '../components/DataTable';
 
 function ExploreData() {
     return (
         <div>
-            <BasicMenu />
+            <Menu />
             <div className='header'>
                 <h1>Explore Data</h1>
             </div>

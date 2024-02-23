@@ -5,13 +5,16 @@ import os
 import shutil
 from botocore.exceptions import ClientError
 from flask import Flask, jsonify, request, send_file
+from flask_cors import CORS
+from zipfile import ZipFile
+from io import BytesIO
 
 main_bucket = "bucket-for-testing-boto3"
 zip_temp = "zip_temp"
 download_temp = "Sanctum_Images"
 
 app = Flask(__name__)
-CORS(app) # fixes the CORS issue on message return
+CORS(app)
 
 # Test route on root path
 # Input: None
@@ -19,6 +22,24 @@ CORS(app) # fixes the CORS issue on message return
 @app.route('/', methods=['GET'])
 def test_function():
     return jsonify(list_existing_buckets())
+
+@app.route('/display', methods=['GET'])
+def display_all():
+    top_level_folders = list()
+    buckets = list_existing_buckets()
+    if len(buckets) == 0:
+        return jsonify({"error": "No buckets found"})
+    else:
+        bucket = buckets[0]
+        client = boto3.client('s3')
+        paginator = client.get_paginator('list_objects')
+        result = paginator.paginate(Bucket=bucket, Delimiter='/')
+    try:
+        for prefix in result.search('CommonPrefixes'):
+            top_level_folders.append(prefix.get('Prefix'))
+    except Exception as e: 
+        return jsonify({"error": f"{str(e)} - No prefixes found, bucket likely empty."})
+    return top_level_folders
 
 # Downloads an array of images from s3 bucket and sends them to frontend
 # Input: files: Array of files to download
@@ -46,11 +67,11 @@ def download_files():
 # Output: Bool
 @app.route('/upload', methods=['POST'])
 def upload_files():
-    data = request.get_json()
-
-    if 'files' in data:
+    
+    if 'files' in request.files:
         try:
-            success = upload_files(data['files'], main_bucket)
+            files = request.files.getlist('files')
+            success = upload_files(files, main_bucket)
             return jsonify(success)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -60,6 +81,7 @@ def upload_files():
 
 # Test file, displays an array of all existing buckets
 def list_existing_buckets():
+    boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     boto3.setup_default_session(profile_name="dev")
     response = s3_client.list_buckets()
@@ -75,12 +97,13 @@ def upload_files(file_arr, bucket):
     s3_client = boto3.client('s3')
     try:
         for file in file_arr:
-            if file.endswith(".zip"):
+
+            if file.filename.endswith(".zip"):
                 unzip_files(file)
-            elif os.path.isdir(file):
+            elif os.path.isdir(file.filename):
                 upload_dir(file, bucket)
             else:
-                s3_client.upload_file(file, bucket, file)
+                s3_client.upload_fileobj(file, bucket, file.filename)
         if (os.path.exists(zip_temp)):
             for dir_, _, files in os.walk(zip_temp): # walk avoids the issue of uploading directories
                 for file in files:
@@ -125,7 +148,16 @@ def download_files(file_arr, bucket):
 
 # internal function that handles zip files. Uses temporary folder zip_temp
 def unzip_files(file_name):
-    shutil.unpack_archive(file_name, zip_temp)
+    #shutil.unpack_archive(file_name, zip_temp)
+    # Get the bytes data from the FileStorage object
+    file_bytes = file_name.read()
+
+    # Create a BytesIO object to treat the bytes data as a file
+    file_like_object = BytesIO(file_bytes)
+
+    # Use ZipFile to extract the contents of the archive
+    with ZipFile(file_like_object, 'r') as zip_ref:
+        zip_ref.extractall(zip_temp)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

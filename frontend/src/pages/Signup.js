@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import Menu from "../components/Menu";
 import React, {useState} from "react";
 import BasicMenu from "../components/BasicMenu";
 import "../styles/loginSignup.css";

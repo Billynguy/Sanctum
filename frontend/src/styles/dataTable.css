@@ -1,0 +1,36 @@
+.data-grid-container {
+    height: 100%;
+    width: 100%;
+}
+
+.header {
+    color: black;
+}
+
+.search-box {
+    border-radius: 20px;
+    padding: 8px;
+    margin-bottom: 16px;
+}
+
+.search-box input {
+    background-color: #f0f0f0;
+    width: 20%;
+    border: none;
+    padding: 8px;
+    border-radius: 20px;
+    outline: none;
+    /* font-style: italic; */
+    text-align: left;
+    padding-left: 10px;
+}
+
+.search-box input::placeholder {
+    /* text-align: center; */
+    
+}
+
+.no-results {
+    font-size: 16px;
+    color: #555;
+}

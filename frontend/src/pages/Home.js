@@ -1,11 +1,14 @@
 import React from 'react';
-import BasicMenu from '../components/BasicMenu';
+import Menu from '../components/Menu';
+import "../styles/home.css";
 
 function Home() {
   return (
     <div>
-      <BasicMenu />
-      <h1>Welcome to Sanctum</h1>
+      <Menu />
+      <div className="header">
+        <h1>Welcome to Sanctum</h1>
+      </div>
     </div>
   );
 }

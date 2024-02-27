@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import BasicMenu from "../components/BasicMenu";
+import React, { useState } from "react";
+import Menu from "../components/Menu";
 import "../styles/loginSignup.css";
 import {Link} from "react-router-dom";
 import { Button } from "@mui/material";

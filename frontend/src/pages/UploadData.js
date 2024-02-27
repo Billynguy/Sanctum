@@ -2,6 +2,7 @@ import React from "react";
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import BasicMenu from "../components/BasicMenu";
+import axios from 'axios';
 
 class UploadData extends React.Component {
     constructor(props) {

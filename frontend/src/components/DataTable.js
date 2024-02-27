@@ -75,6 +75,7 @@ function DataTable(){
                     pageSizeOptions={[10]}
                     disableSelectionOnClick
                     disableColumnMenu
+                    disableRowSelectionOnClick
                 />
             ) : (
                 <div className="no-results">

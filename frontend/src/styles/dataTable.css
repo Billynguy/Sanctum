@@ -3,6 +3,11 @@
     width: 100%;
 }
 
+.MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
+}
+
 .header {
     color: black;
 }
@@ -20,7 +25,6 @@
     padding: 8px;
     border-radius: 20px;
     outline: none;
-    /* font-style: italic; */
     text-align: left;
     padding-left: 10px;
 }

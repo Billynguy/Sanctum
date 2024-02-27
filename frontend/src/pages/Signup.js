@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Menu from "../components/Menu";
 import "../styles/loginSignup.css";
 import {Link} from "react-router-dom";
@@ -14,6 +15,8 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [confirmationCode, setConfirmConfirmationCode] = useState('');
+    const [isSignedUp, setIsSignedUp] = useState(false);
+    const navigate = useNavigate()
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -27,7 +30,11 @@ const Signup = () => {
 
 
         UserPool.signUp(username, password, attributeList, null, (err, data) => {
-            if (err) alert(err);
+            if (err) {
+                alert(err)
+            } else {
+                setIsSignedUp(true);
+            }
             //user = data.user;
         });
     };
@@ -44,6 +51,8 @@ const Signup = () => {
                 alert(err);
                 return;
             }
+            alert(username + " has been created.");
+            navigate('/')
             console.log('confirmation result: ' + result);
         });
     };
@@ -68,24 +77,33 @@ const Signup = () => {
             <Menu/>
             <div className="centered-login-form">
                 <h1>Join Sanctum</h1>
-                <input className="credential-input" value={name} type="text" placeholder="Enter name..." onChange={(event) => setName(event.target.value)}></input>
-                <br></br>
-                <input className="credential-input" value={email} type="text" placeholder="Enter email..." onChange={(event) => setEmail(event.target.value)}></input>
-                <br></br>
-                <input className="credential-input" value={phone} type="text" placeholder="Enter phone number..." onChange={(event) => setPhone(event.target.value)}></input>
-                <br></br>
-                <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>
-                <br></br>
-                <input className="credential-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>
-                <br></br>
-                <input className="credential-input" value={confirmPassword} type="password" placeholder="Confirm password..." onChange={(event) => setConfirmPassword(event.target.value)}></input>
-                <br></br><br></br><br></br>
-                <input className="credential-input" value={confirmationCode} type="text" placeholder="Enter confirmation code..." onChange={(event) => setConfirmConfirmationCode(event.target.value)}></input>
-                <p>Already have an account? <Link to="/login" className="sign-up-button">Log In</Link></p>
+                {!isSignedUp && (
+                    <>
+                        <input className="credential-input" value={name} type="text" placeholder="Enter name..." onChange={(event) => setName(event.target.value)}></input>
+                        <br></br>
+                        <input className="credential-input" value={email} type="text" placeholder="Enter email..." onChange={(event) => setEmail(event.target.value)}></input>
+                        <br></br>
+                        <input className="credential-input" value={phone} type="text" placeholder="Enter phone number..." onChange={(event) => setPhone(event.target.value)}></input>
+                        <br></br>
+                        <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>
+                        <br></br>
+                        <input className="credential-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>
+                        <br></br>
+                        <input className="credential-input" value={confirmPassword} type="password" placeholder="Confirm password..." onChange={(event) => setConfirmPassword(event.target.value)}></input>
+                        <br></br>
+                        <Button variant="contained" onClick={onSubmit}>Sign Up</Button>
+                        <p>Already have an account? <Link to="/login" className="sign-up-button">Log In</Link></p>
+                    </>
+                )}
+                {isSignedUp && (
+                    <div className ="confirmation-container">
+                    <input className="credential-input" value={confirmationCode} type="text" placeholder="Enter confirmation code..." onChange={(event) => setConfirmConfirmationCode(event.target.value)}></input>
+                    <br></br>
+                    <Button variant="contained" onClick={onSubmitConfirmation}>Confirm Sign Up</Button>
+                    <Button variant="contained" onClick={onResendConfirmation}>Resend Confirmation Code</Button>
+                    </div>
+                )}
             </div>
-            <Button variant="contained" onClick={onSubmit}>Sign Up</Button>
-            <Button variant="contained" onClick={onSubmitConfirmation}>Confirm Sign Up</Button>
-            <Button variant="contained" onClick={onResendConfirmation}>Resend Confirmation Code</Button>
         </div>
     );
 

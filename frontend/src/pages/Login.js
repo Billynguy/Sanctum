@@ -1,42 +1,44 @@
 import React, { useState } from "react";
 import Menu from "../components/Menu";
 import "../styles/loginSignup.css";
-import { Link } from "react-router-dom";
-import Button from '@mui/material/Button';
+import {Link} from "react-router-dom";
+import { Button } from "@mui/material";
+import UserPool from "../components/UserPool";
+import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
 
-const Login = () => {
+function Login () {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleUsername = (event) => {
-        console.log(event.target.value)
-        setUsername(event.target.value);
-    };
+    const onSubmit = (event) => {
+        var authenticationDetails = new AuthenticationDetails( {Username: username, Password: password, });
+        var cognitoUser = new CognitoUser({Username: username, Pool: UserPool,});
 
-    const handlePassword = (event) => {
-        console.log(event.target.value)
-        setPassword(event.target.value);
-    };
+        cognitoUser.authenticateUser(authenticationDetails, {
+	        onSuccess: function(result) {
+                //console.log(result);
+                alert("user " + cognitoUser.getUsername() + " has successfully logged in.");
+		   //var accessToken = result.getAccessToken().getJwtToken();
+	    },
+            onFailure: function(err) {
+                alert(err.message || JSON.stringify(err));
+            },
+        });
 
-    const handleLogIn = (event) => {
-        event.preventDefault();
-        // TODO: send credentials to backend for login verification
     };
+    
 
     return (
         <div>
-            <Menu />
+            <BasicMenu/>
             <div className="centered-login-form">
                 <h1>Enter Sanctum</h1>
-                <input className="credential-input" type="text" placeholder="Enter username..." value={username} onChange={handleUsername} />
-                <br />
-                <input className="credential-input" type="password" placeholder="Enter password..." value={password} onChange={handlePassword} />
-                <br />
-                <Button type="submit" component="label" variant="contained" onClick={handleLogIn}>
-                    LOG IN
-                </Button>
+                <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>
+                <br></br>
+                <input className="credential-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>
                 <p>Don't have an account? <Link to="/signup" className="sign-up-button">Sign up</Link></p>
             </div>
+            <Button variant="contained" onClick={onSubmit}>Log In</Button>
         </div>
     );
 }

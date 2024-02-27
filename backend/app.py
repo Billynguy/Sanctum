@@ -141,7 +141,7 @@ def download_files(file_arr, bucket):
     shutil.rmtree(download_temp)
     return not_found
 
-# internal function that handles zip files. Uses temporary folder zip_temp
+# Internal function that handles zip files. Uses temporary folder zip_temp
 def unzip_files(file_name):
     #shutil.unpack_archive(file_name, zip_temp)
     # Get the bytes data from the FileStorage object
@@ -153,6 +153,9 @@ def unzip_files(file_name):
     # Use ZipFile to extract the contents of the archive
     with ZipFile(file_like_object, 'r') as zip_ref:
         zip_ref.extractall(zip_temp)
+
+def bucket_search(file_name, bucket):
+    return 0
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import Menu from "../components/Menu";
-import React, {useState} from "react";
-import BasicMenu from "../components/BasicMenu";
 import "../styles/loginSignup.css";
 import {Link} from "react-router-dom";
 import { Button } from "@mui/material";
@@ -67,9 +65,9 @@ const Signup = () => {
     
     return (
         <div>
-            <BasicMenu/>
+            <Menu/>
             <div className="centered-login-form">
-                <h1>Create Account</h1>
+                <h1>Join Sanctum</h1>
                 <input className="credential-input" value={name} type="text" placeholder="Enter name..." onChange={(event) => setName(event.target.value)}></input>
                 <br></br>
                 <input className="credential-input" value={email} type="text" placeholder="Enter email..." onChange={(event) => setEmail(event.target.value)}></input>

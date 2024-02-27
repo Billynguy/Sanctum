@@ -30,7 +30,7 @@ function Login () {
 
     return (
         <div>
-            <BasicMenu/>
+            <Menu/>
             <div className="centered-login-form">
                 <h1>Enter Sanctum</h1>
                 <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>

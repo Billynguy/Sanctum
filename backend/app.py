@@ -1,5 +1,3 @@
-# import sys
-# import threading
 import boto3
 import logging
 import os
@@ -10,6 +8,7 @@ from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from zipfile import ZipFile
 from io import BytesIO
+import re 
 
 main_bucket = "bucket-for-testing-boto3"
 zip_temp = "zip_temp"
@@ -92,46 +91,39 @@ def list_existing_buckets():
         buckets.append(bucket["Name"])
     return buckets
 
-# Accepts an array of files to upload to the 
+# Uploads zip files to S3. Any individual files are zipped before being uploaded.
+# Input: file_arr: Array of files, bucket: Name of S3 Bucket
+# Output: Bool
 def upload_files(file_arr, bucket):    
     boto3.setup_default_session(profile_name="dev")
-    # s3_client = boto3.client('s3')
-    # config = TransferConfig(multipart_threshold=1024*25, max_concurrency=10,
-    #                     multipart_chunksize=1024*25, use_threads=True)
     try:
-        # if os.path.exists(download_temp + ".zip"): # remove old zip file if it exists
-        #     os.remove(download_temp + ".zip")
-        zip_buffer = BytesIO()
-        zip_file_name = ""
-        with ZipFile(zip_buffer, 'w') as zip_file:
             for file in file_arr:
-                if file.filename.endswith(".zip"):
-                    # s3_client.upload_fileobj(file, bucket, file.filename, Config=config, Callback=ProgressPercentage(file))
-                    directory = "./"
-                    local_path = os.path.join(directory, file.filename)
-                    file.save(local_path)
-                    cmd = 'aws s3 cp ' + local_path + ' s3://' + bucket + ' --profile dev --no-parallel'
-                    os.system(cmd)
-                else:
-                    if len(zip_file_name)==0: 
-                        zip_file_name = file.filename
-                    file_content = file.read()
-                    zip_file.writestr(file.filename, file_content)
-        if not len(zip_file_name) == 0:
-            # s3_client.upload_fileobj(zip_buffer, bucket, zip_file_name+".zip", Config=config, Callback=ProgressPercentage(file))
-            directory = "./"
-            cmd = 'aws s3 cp ' + directory + ' s3://' + bucket + ' --profile dev'
-            os.system(cmd)
+                zip_buffer = BytesIO()
+                with ZipFile(zip_buffer, 'w') as zip_file:
+                    if file.filename.endswith(".zip"):
+                        directory = "./"
+                        local_path = os.path.join(directory, file.filename)
+                        file.save(local_path)
+                        cmd = 'aws s3 cp ' + local_path + ' s3://' + bucket + ' --profile dev'
+                        os.system(cmd)
+                        os.remove(local_path)
+                    else:
+                        name_without_extension = re.sub(r'\.[^.\\/:*?"<>|\r\n]+$', '', file.filename)
+                        zip_file_name = name_without_extension + '.zip'
+                        file_content = file.read()
+                        zip_file.writestr(file.filename, file_content)
+                        directory = "./"
+                        local_path = os.path.join(directory, zip_file_name)
+                        with open(local_path, 'wb') as f:
+                            f.write(zip_buffer.getvalue())
+                            f.close()
+                        cmd = 'aws s3 cp "' + local_path + '" s3://' + bucket + ' --profile dev'
+                        os.system(cmd)
+                        os.remove(local_path)
     except Exception as e:
         logging.error(e)
         return False
     return True
-
-# Handles uploads when a directory is passed
-# def upload_dir(directory, bucket):
-#     cmd = 'aws s3 sync ' + directory + ' s3://' + bucket + ' --profile dev'
-#     print(cmd)
-#     os.system(cmd)
 
 # Downloads a file into the temporary folder download_temp, then zips it up and deletes the original
 def download_files(file_arr, bucket):

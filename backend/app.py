@@ -25,6 +25,10 @@ CORS(app)
 def test_function():
     return jsonify(list_existing_buckets())
 
+
+# Display all top level folders. Deprecated. 
+# Input: None
+# Output: List of top level folders
 @app.route('/display', methods=['GET'])
 def display_all():
     top_level_folders = list()
@@ -102,25 +106,47 @@ def upload_files(file_arr, bucket):
             for file in file_arr:
                 zip_buffer = BytesIO()
                 with ZipFile(zip_buffer, 'w') as zip_file:
+                    # Upload zip files directly to S3
                     if file.filename.endswith(".zip"):
+                        
+                        # Create temporary local path for file
                         directory = "./"
                         local_path = os.path.join(directory, file.filename)
+
+                        # Save file to local path
                         file.save(local_path)
+
+                        # Upload zip file to S3
                         cmd = 'aws s3 cp ' + local_path + ' s3://' + bucket + ' --profile dev'
                         os.system(cmd)
+
+                        # Remove local temp file 
                         os.remove(local_path)
+
+
+                    # Zip any individual files, then upload to S3
                     else:
                         name_without_extension = re.sub(r'\.[^.\\/:*?"<>|\r\n]+$', '', file.filename)
                         zip_file_name = name_without_extension + '.zip'
+                        
+                        # Write contents of file to zip buffer
                         file_content = file.read()
                         zip_file.writestr(file.filename, file_content)
+
+                        # Create temporary local path for file
                         directory = "./"
                         local_path = os.path.join(directory, zip_file_name)
+                        
+                        # Write contents of zip buffer to temp file
                         with open(local_path, 'wb') as f:
                             f.write(zip_buffer.getvalue())
                             f.close()
+
+                        # Upload zip file to S3
                         cmd = 'aws s3 cp "' + local_path + '" s3://' + bucket + ' --profile dev'
                         os.system(cmd)
+
+                        # Remove local temp file
                         os.remove(local_path)
     except Exception as e:
         logging.error(e)

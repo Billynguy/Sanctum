@@ -1,4 +1,5 @@
 import boto3
+from flask_cors import CORS
 import logging
 import os
 import shutil
@@ -84,6 +85,7 @@ def upload_files():
 def list_existing_buckets():
     boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
+    boto3.setup_default_session(profile_name="dev")
     response = s3_client.list_buckets()
 
     buckets = list()

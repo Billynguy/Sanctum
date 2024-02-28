@@ -26,14 +26,9 @@ def test_function():
 @app.route('/display', methods=['GET'])
 def display_all():
     top_level_folders = list()
-    buckets = list_existing_buckets()
-    if len(buckets) == 0:
-        return jsonify({"error": "No buckets found"})
-    else:
-        bucket = buckets[0]
-        client = boto3.client('s3')
-        paginator = client.get_paginator('list_objects')
-        result = paginator.paginate(Bucket=bucket, Delimiter='/')
+    client = boto3.client('s3')
+    paginator = client.get_paginator('list_objects')
+    result = paginator.paginate(Bucket=main_bucket, Delimiter='/')
     try:
         for prefix in result.search('CommonPrefixes'):
             top_level_folders.append(prefix.get('Prefix'))
@@ -79,11 +74,10 @@ def upload_files():
         return jsonify({"error": "Incorrect input format"}), 400
 ## Functions
 
-# Test file, displays an array of all existing buckets
+# Test method, displays an array of all existing buckets
 def list_existing_buckets():
     boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
-    boto3.setup_default_session(profile_name="dev")
     response = s3_client.list_buckets()
 
     buckets = list()
@@ -154,8 +148,34 @@ def unzip_files(file_name):
     with ZipFile(file_like_object, 'r') as zip_ref:
         zip_ref.extractall(zip_temp)
 
-def bucket_search(file_name, bucket):
-    return 0
+# Searches bucket for all matches in search_param
+def bucket_search(search_param, bucket):
+    client = boto3.client('s3')
+    paginator = client.get_paginator('list_objects_v2')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    count = 0
+    page = paginator.paginate(Bucket=bucket)
+    objects = page.search(f"Contents[?contains(Key, `{search_param}`)][]")
+    for item in objects:
+        count = count + 1
+        print(item)
+        print(count)
+
+# Returns a list of all files in a bucket
+def display_nondirectories():
+    client = boto3.client('s3')
+    response = client.list_objects_v2(Bucket=main_bucket)
+    images = list()
+    if 'Contents' in response:
+        for obj in response['Contents']:
+            try:
+                images.append(obj['Key'].split('/')[-1])
+            except IndexError:
+                images.append(obj['Key'])
+        return images
+    else:
+        return("Folder is empty")
+
+display_nondirectories()
+#if __name__ == '__main__':
+#    app.run(debug=True)

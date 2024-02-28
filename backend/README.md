@@ -22,6 +22,11 @@ The backend runs on http://localhost:5000, and each route below is an extension 
     Input: {'files' : [file_name]}
     Output: Boolean success value
 
+`/display_files`: Returns a list of all files in a bucket, organized in dictionaries containing the file name, location, type, size, and when it was last modified
+
+    Input: None
+    Output: List of all files
+
 `/`: Test route on root path
 
     Input: None

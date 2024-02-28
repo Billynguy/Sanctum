@@ -23,8 +23,44 @@ CORS(app)
 def test_function():
     return jsonify(list_existing_buckets())
 
-@app.route('/display', methods=['GET'])
-def display_all():
+# Returns a list of all files in a bucket, organized in dictionaries containing 
+#         the file name, location, type, size, and when it was last modified
+# Input: None
+# Output: List of all files
+@app.route('/display_files', methods=['GET'])
+def display_files():
+    client = boto3.client('s3')
+    response = client.list_objects_v2(Bucket=main_bucket)
+    files = list()
+    if 'Contents' in response:
+        for obj in response['Contents']:
+            item = dict()
+            try:
+                fileInfo = obj['Key'].split('/')
+                item["Name"] = fileInfo[-1]
+                item["Location"] =  '/'.join(fileInfo[:-1])
+                item["Type"] = fileInfo[-1].split('.')[1]
+            except IndexError:
+                item["Name"] = obj['Key']
+                item["Location"] = "/"
+                item["Type"] = obj['Key'].split('.')[1]
+            if 'LastModified' in obj:
+                item["LastModified"] = obj["LastModified"]
+            else:
+                item["LastModified"] = None
+            if 'Size' in obj:
+                item["Size"] = obj['Size']
+            else:
+                item["Size"] = 0
+            files.append(item)
+        return files
+    else:
+        return jsonify({"error" : "Bucket is empty"}), 500
+
+
+
+@app.route('/display_folders', methods=['GET'])
+def display_folders():
     top_level_folders = list()
     client = boto3.client('s3')
     paginator = client.get_paginator('list_objects')
@@ -33,7 +69,7 @@ def display_all():
         for prefix in result.search('CommonPrefixes'):
             top_level_folders.append(prefix.get('Prefix'))
     except Exception as e: 
-        return jsonify({"error": f"{str(e)} - No prefixes found, bucket likely empty."})
+        return jsonify({"error": f"{str(e)} - No prefixes found, bucket likely empty."}), 500
     return top_level_folders
 
 # Downloads an array of images from s3 bucket and sends them to frontend
@@ -148,34 +184,19 @@ def unzip_files(file_name):
     with ZipFile(file_like_object, 'r') as zip_ref:
         zip_ref.extractall(zip_temp)
 
-# Searches bucket for all matches in search_param
+# Searches bucket for all matches in search_param, returns a list of all matches
 def bucket_search(search_param, bucket):
     client = boto3.client('s3')
+    ret = list()
     paginator = client.get_paginator('list_objects_v2')
 
-    count = 0
     page = paginator.paginate(Bucket=bucket)
     objects = page.search(f"Contents[?contains(Key, `{search_param}`)][]")
-    for item in objects:
-        count = count + 1
-        print(item)
-        print(count)
+    for i in objects:
+        ret.append(i)
+    return ret
+    
 
-# Returns a list of all files in a bucket
-def display_nondirectories():
-    client = boto3.client('s3')
-    response = client.list_objects_v2(Bucket=main_bucket)
-    images = list()
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            try:
-                images.append(obj['Key'].split('/')[-1])
-            except IndexError:
-                images.append(obj['Key'])
-        return images
-    else:
-        return("Folder is empty")
-
-display_nondirectories()
+display_files()
 #if __name__ == '__main__':
 #    app.run(debug=True)

@@ -5,10 +5,13 @@ import {Link, useNavigate} from "react-router-dom";
 import { Button } from "@mui/material";
 import UserPool from "../components/UserPool";
 import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
+import User from "../components/User";
 
 function Login () {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    // const [loggedIn, setLoggedIn] = useState(false);
+    // const [userSession, setUserSession] = useState(null);
     const navigate = useNavigate()
 
     const onSubmit = (event) => {
@@ -17,10 +20,11 @@ function Login () {
 
         cognitoUser.authenticateUser(authenticationDetails, {
 	        onSuccess: function(result) {
-                //console.log(result);
                 alert("user " + cognitoUser.getUsername() + " has successfully logged in.");
+                // setLoggedIn(true);
+                // setUserSession(result);
+                sessionStorage.setItem('userSession', JSON.stringify(result));
                 navigate('/')
-		   //var accessToken = result.getAccessToken().getJwtToken();
 	    },
             onFailure: function(err) {
                 alert(err.message || JSON.stringify(err));
@@ -28,10 +32,10 @@ function Login () {
         });
 
     };
-    
 
     return (
         <div>
+            <User/>
             <Menu/>
             <div className="centered-login-form">
                 <h1>Enter Sanctum</h1>

@@ -20,7 +20,6 @@ const Signup = () => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        console.log('username: ', username);
 
         var attributeList = [];
         attributeList.push(new CognitoUserAttribute({Name: 'email', Value: email,}));

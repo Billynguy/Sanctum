@@ -91,7 +91,7 @@ const Signup = () => {
                         <br></br>
                         <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>
                         <br></br>
-                        <input className="credential-input pass-input" value={password} type="password" placeholder="Enter password..." onClick={onPassClick} onChange={(event) => setPassword(event.target.value)}></input>
+                        <input className="credential-input pass-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>
                         <p className="detail-text">Password must contain at least 1 number, 1 special character, 1 uppercase letter, and 1 lowercase letter</p>
                         <input className="credential-input" value={confirmPassword} type="password" placeholder="Confirm password..." onChange={(event) => setConfirmPassword(event.target.value)}></input>
                         <br></br>

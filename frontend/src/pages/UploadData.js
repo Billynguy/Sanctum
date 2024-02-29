@@ -39,6 +39,7 @@ class UploadData extends React.Component {
         const url = 'http://localhost:5000/upload';
         this.setState({ status: "uploading" })
         const formData = new FormData();
+        formData.append('user', 'test_user');
         this.state.files.forEach((file, index) => {
             formData.append('files', file);
         })
@@ -69,7 +70,7 @@ class UploadData extends React.Component {
                 this.setState({ uploadedFiles: this.files })
             })
             .catch((error) => {
-                console.error("Error uploading this file")
+                console.error("Error uploading this file: ", error.response.data)
                 this.setState({ status: "fail" })
             });
 

@@ -1,5 +1,5 @@
 import boto3
-from flask_cors import CORS
+import datetime
 import logging
 import os
 import shutil
@@ -11,7 +11,12 @@ from io import BytesIO
 
 main_bucket = "bucket-for-testing-boto3"
 zip_temp = "zip_temp"
+upload_temp = ""
 download_temp = "Sanctum_Images"
+datetime_format = "%d-%m-%Y-%H-%M-%S"
+maxKeys = 100
+isTruncated = False
+nextContinuationToken = ""
 
 app = Flask(__name__)
 CORS(app)
@@ -23,41 +28,32 @@ CORS(app)
 def test_function():
     return jsonify(list_existing_buckets())
 
-# Returns a list of all files in a bucket, organized in dictionaries containing 
+# Returns a list of the first `maxKeys` files in a bucket, organized in dictionaries containing 
 #         the file name, location, type, size, and when it was last modified
 # Input: None
-# Output: List of all files
+# Output: List of files
 @app.route('/display_files', methods=['GET'])
 def display_files():
     client = boto3.client('s3')
-    response = client.list_objects_v2(Bucket=main_bucket)
-    files = list()
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            item = dict()
-            try:
-                fileInfo = obj['Key'].split('/')
-                item["Name"] = fileInfo[-1]
-                item["Location"] =  '/'.join(fileInfo[:-1])
-                item["Type"] = fileInfo[-1].split('.')[1]
-            except IndexError:
-                item["Name"] = obj['Key']
-                item["Location"] = "/"
-                item["Type"] = obj['Key'].split('.')[1]
-            if 'LastModified' in obj:
-                item["LastModified"] = obj["LastModified"]
-            else:
-                item["LastModified"] = None
-            if 'Size' in obj:
-                item["Size"] = obj['Size']
-            else:
-                item["Size"] = 0
-            files.append(item)
-        return files
-    else:
-        return jsonify({"error" : "Bucket is empty"}), 500
+    response = client.list_objects_v2(Bucket=main_bucket, MaxKeys=maxKeys)
 
+    return display_helper(response)
+    
+# Returns the next `maxKeys` files in the bucket, organized as above
+# Input: None
+# Output: List of files
+@app.route('/next_page', methods=['GET'])
+def next_page():
+    global nextContinuationToken
+    global isTruncated
 
+    if (not isTruncated):
+        return jsonify({"error": "No files to show"}), 400
+    
+    client = boto3.client('s3')
+    response = client.list_objects_v2(Bucket=main_bucket, MaxKeys=maxKeys, ContinuationToken=nextContinuationToken)
+    
+    return display_helper(response)
 
 @app.route('/display_folders', methods=['GET'])
 def display_folders():
@@ -98,11 +94,11 @@ def download_files():
 # Output: Bool
 @app.route('/upload', methods=['POST'])
 def upload_files():
-    
-    if 'files' in request.files:
+    if 'files' in request.files and 'user' in request.form:
         try:
             files = request.files.getlist('files')
-            success = upload_files(files, main_bucket)
+            user = request.form['user']
+            success = upload_files(files, user, main_bucket)
             return jsonify(success)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -121,17 +117,18 @@ def list_existing_buckets():
         buckets.append(bucket["Name"])
     return buckets
 
-# Accepts an array of files to upload to the 
-def upload_files(file_arr, bucket):    
+'''
+# Accepts an array of files to upload to the s3 bucket
+def upload_files(file_arr, user, bucket):    
     boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     try:
         for file in file_arr:
 
             if file.filename.endswith(".zip"):
-                unzip_files(file)
+                unzip_files(file, user)
             else:
-                s3_client.upload_fileobj(file, bucket, file.filename)
+                s3_client.upload_fileobj(file, bucket, file.filename + "-" + user)
         if (os.path.exists(zip_temp)):
             upload_dir(zip_temp, bucket)
             shutil.rmtree(zip_temp)
@@ -139,10 +136,30 @@ def upload_files(file_arr, bucket):
         logging.error(e)
         return False
     return True
+'''
+
+# Accepts an array of files to upload to the s3 bucket, generates a folder automatically
+def upload_files(file_arr, user, bucket):
+    upload_temp = user + "-" + datetime.datetime.now().strftime(datetime_format)
+    print(upload_temp)
+    os.mkdir(upload_temp)
+    try:
+        for file in file_arr:
+            if file.filename.endswith(".zip"):
+                unzip_files(file, user)
+            else:
+                file.save(os.path.join(upload_temp, file.filename))
+        if (os.path.exists(upload_temp)):
+            upload_dir(upload_temp, bucket)
+            shutil.rmtree(upload_temp)
+    except Exception as e:
+        logging.error(e)
+        return False
+    return True
 
 # Handles uploads when a directory is passed
 def upload_dir(directory, bucket):
-    cmd = 'aws s3 sync ' + directory + ' s3://' + bucket + ' --profile dev'
+    cmd = 'aws s3 cp ' + directory + ' s3://' + bucket + '/' + directory + ' --profile dev --recursive'
     print(cmd)
     os.system(cmd)
 
@@ -172,8 +189,7 @@ def download_files(file_arr, bucket):
     return not_found
 
 # Internal function that handles zip files. Uses temporary folder zip_temp
-def unzip_files(file_name):
-    #shutil.unpack_archive(file_name, zip_temp)
+def unzip_files(file_name, user):
     # Get the bytes data from the FileStorage object
     file_bytes = file_name.read()
 
@@ -182,7 +198,7 @@ def unzip_files(file_name):
 
     # Use ZipFile to extract the contents of the archive
     with ZipFile(file_like_object, 'r') as zip_ref:
-        zip_ref.extractall(zip_temp)
+        zip_ref.extractall(upload_temp)
 
 # Searches bucket for all matches in search_param, returns a list of all matches
 def bucket_search(search_param, bucket):
@@ -195,8 +211,55 @@ def bucket_search(search_param, bucket):
     for i in objects:
         ret.append(i)
     return ret
-    
+
+# Internal helper function, accepts a response from list_objects_v2 and returns a list of their characteristics
+def display_helper(response):
+    global isTruncated
+    global nextContinuationToken
+
+    isTruncated = response["IsTruncated"]
+    if (isTruncated):
+        nextContinuationToken = response["NextContinuationToken"]
+    else:
+        nextContinuationToken = ""
+    files = list()
+    if 'Contents' in response:
+        for obj in response['Contents']:
+            fileInfo = obj['Key'].split('/')
+            if (fileInfo[0] != 'test_user-28-02-2024-16-29-16'):
+                continue
+            item = dict()
+            try:
+                item["Name"] = fileInfo[-1]
+                item["Location"] =  '/'.join(fileInfo[:-1])
+                item["Type"] = fileInfo[-1].split('.')[1]
+            except IndexError:
+                item["Name"] = obj['Key']
+                item["Location"] = "/"
+                item["Type"] = obj['Key'].split('.')[1]
+            if 'LastModified' in obj:
+                item["LastModified"] = obj["LastModified"]
+            else:
+                item["LastModified"] = None
+            if 'Size' in obj:
+                item["Size"] = obj['Size']
+            else:
+                item["Size"] = 0
+
+            # for experimental file storage system
+            try:
+                extraInfo = fileInfo[0].split('-')
+                item["UploadedBy"] = extraInfo[0]
+                item["UploadedOn"] = datetime.datetime.strptime('-'.join(extraInfo[1:]), datetime_format)
+            except Exception:
+                print('failed')
+            files.append(item)
+        print(files)
+        return files
+    else:
+        return jsonify({"error" : "Bucket is empty"}), 500
 
 display_files()
+next_page()
 #if __name__ == '__main__':
 #    app.run(debug=True)

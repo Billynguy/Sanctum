@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from "./pages/Signup";
 import UploadData from './pages/UploadData';
 import ExploreData from './pages/ExploreData';
+import ViewData from './pages/viewData';
 // import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/upload" element={<UploadData />} />
         <Route path="/explore" element={<ExploreData />} />
+        <Route path="/view/:id" element = {<ViewData/>}/>
       </Routes>
     </Router>
   );

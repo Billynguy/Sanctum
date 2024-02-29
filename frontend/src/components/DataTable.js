@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import '../styles/dataTable.css';
-
+import { Link } from 'react-router-dom';
 const columns = [
-    { field: 'name', headerName: 'Name', flex: 1 },
-    { field: 'description', headerName: 'Format', flex: 2},
+    { field: 'name', headerName: 'Name', flex: 1, renderCell: (params) => <Link to={`/view/${params.value}`}>{params.value}</Link> },
+    { field: 'description', headerName: 'Description', flex: 2},
     { field: 'tags', headerName: 'Tags', flex: 0.50},
     { field: 'format', headerName: 'Format', flex: 0.25 },
     { field: 'size', headerName: 'Size', flex: 0.25 },

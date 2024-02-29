@@ -5,7 +5,9 @@ import "../styles/loginSignup.css";
 import {Link} from "react-router-dom";
 import { Button } from "@mui/material";
 import UserPool from "../components/UserPool";
-import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
+import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
+
 
 const Signup = () => {
     const [name, setName] = useState(''); 
@@ -16,11 +18,14 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [confirmationCode, setConfirmConfirmationCode] = useState('');
     const [isSignedUp, setIsSignedUp] = useState(false);
+    const [resendMessage, setResendMessage] = useState('');
     const navigate = useNavigate()
 
     const onSubmit = (event) => {
         event.preventDefault();
 
+        if (password !== confirmPassword) { alert("Passwords do not match."); return; }
+        console.log(phone);
         var attributeList = [];
         attributeList.push(new CognitoUserAttribute({Name: 'email', Value: email,}));
         attributeList.push(new CognitoUserAttribute({Name: 'phone_number', Value: phone,}));
@@ -67,10 +72,10 @@ const Signup = () => {
                 alert(err.message || JSON.stringify(err));
                 return;
             }
-            console.log(result);
+            setResendMessage("Confirmation code sent to " + result["CodeDeliveryDetails"]["Destination"] + ".");
         });
     }
-    
+
     return (
         <div>
             <Menu/>
@@ -82,12 +87,12 @@ const Signup = () => {
                         <br></br>
                         <input className="credential-input" value={email} type="text" placeholder="Enter email..." onChange={(event) => setEmail(event.target.value)}></input>
                         <br></br>
-                        <input className="credential-input" value={phone} type="text" placeholder="Enter phone number..." onChange={(event) => setPhone(event.target.value)}></input>
+                        <PhoneInput className="credential-input phone-input" placeholder="Enter phone number..." value={phone} onChange={setPhone}/>
                         <br></br>
                         <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>
                         <br></br>
-                        <input className="credential-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>
-                        <br></br>
+                        <input className="credential-input pass-input" value={password} type="password" placeholder="Enter password..." onClick={onPassClick} onChange={(event) => setPassword(event.target.value)}></input>
+                        <p className="detail-text">Password must contain at least 1 number, 1 special character, 1 uppercase letter, and 1 lowercase letter</p>
                         <input className="credential-input" value={confirmPassword} type="password" placeholder="Confirm password..." onChange={(event) => setConfirmPassword(event.target.value)}></input>
                         <br></br>
                         <Button variant="contained" onClick={onSubmit}>Sign Up</Button>
@@ -100,6 +105,7 @@ const Signup = () => {
                     <br></br>
                     <Button variant="contained" onClick={onSubmitConfirmation}>Confirm Sign Up</Button>
                     <Button variant="contained" onClick={onResendConfirmation}>Resend Confirmation Code</Button>
+                    {resendMessage && <p className="detail-text">{resendMessage}</p>}
                     </div>
                 )}
             </div>

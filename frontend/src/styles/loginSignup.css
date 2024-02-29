@@ -21,6 +21,15 @@
     color: rgb(0, 0, 0);
 }
 
+.pass-input{
+    margin-bottom: 0px !important;
+}
+
+.phone-input{
+    margin-left: 120px !important;
+    margin-bottom: 0px;
+}
+
 .credential-input::placeholder {
     color: gray;
 }
@@ -35,4 +44,9 @@
 
 .confirmation-container Button {
     margin-right: 10px;
+}
+
+.detail-text {
+    font-size: 10px;
+    color: gray;
 }

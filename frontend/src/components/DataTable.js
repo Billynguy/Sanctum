@@ -13,7 +13,7 @@ const columns = [
 
 function getRowId(row) {
     return row.name;
-  }
+}
 function DataTable(){
     const [searchTerm, setSearchTerm] = useState('');
     const [data, setData] = useState([]);

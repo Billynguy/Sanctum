@@ -27,7 +27,7 @@ function Profile() {
       <div className="header">
       <h2>Hello, {userSession['idToken']['payload']['name']}</h2>
       </div>    
-      <p>User permissions: tbd</p>
+      <p>User type: {userSession['idToken']['payload']['custom:user-type']}</p>
       <p>Email: {userSession['idToken']['payload']['email']}</p>
       <p>Phone: {userSession['idToken']['payload']['phone_number']}</p>
       <p>Region: {userSession['idToken']['payload']['locale']}</p>

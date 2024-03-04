@@ -10,8 +10,6 @@ import User from "../components/User";
 function Login () {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    // const [loggedIn, setLoggedIn] = useState(false);
-    // const [userSession, setUserSession] = useState(null);
     const navigate = useNavigate()
 
     const onSubmit = (event) => {
@@ -21,8 +19,7 @@ function Login () {
         cognitoUser.authenticateUser(authenticationDetails, {
 	        onSuccess: function(result) {
                 alert("user " + cognitoUser.getUsername() + " has successfully logged in.");
-                // setLoggedIn(true);
-                // setUserSession(result);
+                sessionStorage.setItem('userLoggedIn', "true");
                 sessionStorage.setItem('userSession', JSON.stringify(result));
                 navigate('/')
 	    },

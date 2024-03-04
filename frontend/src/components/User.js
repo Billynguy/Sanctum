@@ -6,10 +6,12 @@ import "../styles/user.css";
 function User() {
 
 
-    const loggedIn = UserPool.getCurrentUser() != null;
-
+    //const loggedIn = UserPool.getCurrentUser() != null; //what is the getcurrentuser attribute though
+    const loggedIn = sessionStorage.getItem('userLoggedIn') === "true";
     const getUser = () => {
-        return JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'][`cognito:username`];
+        if (loggedIn) {
+            return JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'][`cognito:username`];
+        }
     }
     return (
         <div className="user">

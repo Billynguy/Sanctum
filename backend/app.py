@@ -20,6 +20,8 @@ nextContinuationToken = ""
 
 app = Flask(__name__)
 CORS(app)
+boto3.setup_default_session(profile_name="dev")
+
 
 # Test route on root path
 # Input: None
@@ -36,7 +38,6 @@ def test_function():
 def display_files():
     client = boto3.client('s3')
     response = client.list_objects_v2(Bucket=main_bucket, MaxKeys=maxKeys)
-
     return display_helper(response)
     
 # Returns the next `maxKeys` files in the bucket, organized as above
@@ -104,11 +105,27 @@ def upload_files():
             return jsonify({"error": str(e)}), 500
     else:
         return jsonify({"error": "Incorrect input format"}), 400
+
+# Searches for files in the bucket containing the specified search term
+# Input: GET request with a query parameter 'search_term'
+# Output: JSON response containing a list of files matching the search term, or an error message
+@app.route('/search_files', methods=['GET'])
+def search_files():
+    search_term = request.args.get('search_term')
+
+    if search_term:
+        try:
+            search_results = bucket_search(search_term, main_bucket)
+            return jsonify(search_results)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "No search term provided"}), 400
+    
 ## Functions
 
 # Test method, displays an array of all existing buckets
 def list_existing_buckets():
-    boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     response = s3_client.list_buckets()
 
@@ -165,7 +182,6 @@ def upload_dir(directory, bucket):
 
 # Downloads a file into the temporary folder download_temp, then zips it up and deletes the original
 def download_files(file_arr, bucket):
-    boto3.setup_default_session(profile_name='dev')
     s3 = boto3.client('s3')
 
     if os.path.exists(download_temp): # remove old download file if it exists
@@ -259,7 +275,7 @@ def display_helper(response):
     else:
         return jsonify({"error" : "Bucket is empty"}), 500
 
-display_files()
-next_page()
-#if __name__ == '__main__':
-#    app.run(debug=True)
+# display_files()
+# next_page()
+if __name__ == '__main__':
+   app.run(debug=True)

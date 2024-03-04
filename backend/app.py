@@ -71,13 +71,31 @@ def upload_files():
     if 'files' in request.files:
         try:
             files = request.files.getlist('files')
-            success = upload_files(files, main_bucket)
+            metadata_arr = request.metadata.getlist('metadata') # Assumes list of metadata for each file is given in a list. Ex: [{"Name: Bob", "Age: 14"}, {"Name: Sally", "Age: 27"}]
+            success = upload_files(files, metadata_arr, main_bucket)
             return jsonify(success)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     else:
         return jsonify({"error": "Incorrect input format"}), 400
+    
+
+# Updates metadata of object
+# Input: Bucket, object key, and updated metadata
+# Output: Bool if success
+@app.route('/edit-metadata/<bucket>/<key>/<metadata>', methods=['POST'])
+def edit_metadata(bucket, key, metadata):
+    boto3.setup_default_session(profile_name="dev")
+    s3_client = boto3.client('s3')
+    s3_client.copy_object(Key=key, Bucket=bucket,
+               CopySource={"Bucket": bucket, "Key": key},
+               Metadata=metadata,
+               MetadataDirective="REPLACE")
+    return True
+
 ## Functions
+
+
 
 # Test file, displays an array of all existing buckets
 def list_existing_buckets():
@@ -92,16 +110,16 @@ def list_existing_buckets():
     return buckets
 
 # Accepts an array of files to upload to the 
-def upload_files(file_arr, bucket):    
+def upload_files(file_arr, metadata_arr, bucket):    
     boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     try:
-        for file in file_arr:
+        for metadata, file in zip(metadata_arr, file_arr):
 
             if file.filename.endswith(".zip"):
                 unzip_files(file)
             else:
-                s3_client.upload_fileobj(file, bucket, file.filename)
+                s3_client.upload_fileobj(file, bucket, file.filename, ExtraArgs={'Metadata': metadata})
         if (os.path.exists(zip_temp)):
             upload_dir(zip_temp, bucket)
             shutil.rmtree(zip_temp)

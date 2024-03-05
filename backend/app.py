@@ -20,6 +20,7 @@ nextContinuationToken = ""
 
 app = Flask(__name__)
 CORS(app)
+boto3.setup_default_session(profile_name="dev")
 
 # Test route on root path
 # Input: None
@@ -108,7 +109,6 @@ def upload_files():
 
 # Test method, displays an array of all existing buckets
 def list_existing_buckets():
-    boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     response = s3_client.list_buckets()
 
@@ -120,7 +120,6 @@ def list_existing_buckets():
 '''
 # Accepts an array of files to upload to the s3 bucket
 def upload_files(file_arr, user, bucket):    
-    boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     try:
         for file in file_arr:
@@ -165,7 +164,6 @@ def upload_dir(directory, bucket):
 
 # Downloads a file into the temporary folder download_temp, then zips it up and deletes the original
 def download_files(file_arr, bucket):
-    boto3.setup_default_session(profile_name='dev')
     s3 = boto3.client('s3')
 
     if os.path.exists(download_temp): # remove old download file if it exists
@@ -259,7 +257,7 @@ def display_helper(response):
     else:
         return jsonify({"error" : "Bucket is empty"}), 500
 
-display_files()
-next_page()
-#if __name__ == '__main__':
-#    app.run(debug=True)
+# display_files()
+# next_page()
+if __name__ == '__main__':
+    app.run(debug=True)

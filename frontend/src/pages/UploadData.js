@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Menu from "../components/Menu";
+import User from "../components/User";
 import "../styles/uploadData.css";
 
 const Result = ({ status }) => {
@@ -78,6 +79,7 @@ class UploadData extends React.Component {
     render() {
         return (
             <div class="wholeDataPage">
+                <User/>
                 <Menu />
                 <div class="title">
                     <h1>Data Upload</h1>

@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Menu from "../components/Menu";
+import User from "../components/User";
 import "../styles/uploadData.css";
 
 const Result = ({ status }) => {
@@ -39,6 +40,7 @@ class UploadData extends React.Component {
         const url = 'http://localhost:5000/upload';
         this.setState({ status: "uploading" })
         const formData = new FormData();
+        formData.append('user', 'test_user');
         this.state.files.forEach((file, index) => {
             formData.append('files', file);
         })
@@ -69,7 +71,7 @@ class UploadData extends React.Component {
                 this.setState({ uploadedFiles: this.files })
             })
             .catch((error) => {
-                console.error("Error uploading this file")
+                console.error("Error uploading this file: ", error.response.data)
                 this.setState({ status: "fail" })
             });
 
@@ -78,6 +80,7 @@ class UploadData extends React.Component {
     render() {
         return (
             <div class="wholeDataPage">
+                <User/>
                 <Menu />
                 <div class="title">
                     <h1>Data Upload</h1>

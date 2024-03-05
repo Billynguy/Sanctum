@@ -11,6 +11,10 @@ const columns = [
     { field: 'modified', headerName: 'Last Modified', flex: 0.50 },
 ];
 
+function getRowId(row){
+    return row.name;
+}
+
 function DataTable(){
     const [searchTerm, setSearchTerm] = useState('');
     const [data, setData] = useState([]);
@@ -28,10 +32,9 @@ function DataTable(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5000/display');
+                const response = await fetch('http://127.0.0.1:5000/display_folders');
                 const names = await response.json();
-                const data = names.map((name, index) => ({
-                    id: index + 1,
+                const data = names.map(name => ({
                     name: name,
                     description: `Description for ${name}`,
                     format: 'TBD',
@@ -69,6 +72,7 @@ function DataTable(){
                 <div>Loading...</div>
             ) : filteredRows.length > 0 ? (
                 <DataGrid
+                    getRowId={getRowId}
                     rows={filteredRows}
                     columns={columns}
                     initialState={initialPaginationState}

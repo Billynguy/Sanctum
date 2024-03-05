@@ -11,7 +11,6 @@ from io import BytesIO
 
 main_bucket = "bucket-for-testing-boto3"
 zip_temp = "zip_temp"
-upload_temp = ""
 download_temp = "Sanctum_Images"
 datetime_format = "%d-%m-%Y-%H-%M-%S"
 maxKeys = 100
@@ -140,12 +139,11 @@ def upload_files(file_arr, user, bucket):
 # Accepts an array of files to upload to the s3 bucket, generates a folder automatically
 def upload_files(file_arr, user, bucket):
     upload_temp = user + "-" + datetime.datetime.now().strftime(datetime_format)
-    print(upload_temp)
     os.mkdir(upload_temp)
     try:
         for file in file_arr:
             if file.filename.endswith(".zip"):
-                unzip_files(file, user)
+                unzip_files(file, user, upload_temp)
             else:
                 file.save(os.path.join(upload_temp, file.filename))
         if (os.path.exists(upload_temp)):
@@ -187,14 +185,9 @@ def download_files(file_arr, bucket):
     return not_found
 
 # Internal function that handles zip files. Uses temporary folder zip_temp
-def unzip_files(file_name, user):
-    # Get the bytes data from the FileStorage object
+def unzip_files(file_name, user, upload_temp):
     file_bytes = file_name.read()
-
-    # Create a BytesIO object to treat the bytes data as a file
     file_like_object = BytesIO(file_bytes)
-
-    # Use ZipFile to extract the contents of the archive
     with ZipFile(file_like_object, 'r') as zip_ref:
         zip_ref.extractall(upload_temp)
 

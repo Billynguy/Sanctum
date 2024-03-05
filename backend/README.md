@@ -22,6 +22,17 @@ The backend runs on http://localhost:5000, and each route below is an extension 
     Input: {'files' : [file_name]}
     Output: Boolean success value
 
+`/display_files`: Returns a list of the first 100 files in a bucket, organized in dictionaries containing the file name, location, type, size, and when it was last modified.
+                  (Experimental Version) Returns the uploader and the time of upload
+
+    Input: None
+    Output: List of files
+
+`/next_page`: Returns the next 100 files in the bucket, if there are more files to show. `/display_files` must be called first for this function to work
+
+    Input: None
+    Output: List of files
+
 `/`: Test route on root path
 
     Input: None

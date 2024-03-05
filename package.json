@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "amazon-cognito-identity-js": "^6.3.7",
-    "boto3": "^0.0.1",
-    "botocore": "^0.0.1"
-  }
-}

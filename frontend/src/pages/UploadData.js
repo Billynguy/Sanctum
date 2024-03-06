@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Menu from "../components/Menu";
+import User from "../components/User";
+import UserContext from "../contexts/UserContext"
 import "../styles/newUploadData.css";
 
 function NewUploadData() {
@@ -10,7 +12,10 @@ function NewUploadData() {
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
+    const { getUser } = useContext(UserContext);
     const [fileFormData, setFileFormData] = useState({
+
+        user: '',
         age: [0, 0],    // minAge, maxAge
         race: {
             white: false,
@@ -30,6 +35,16 @@ function NewUploadData() {
         treatment: '',
         survival: ''
     });
+
+    useEffect(() => {
+        const username = getUser();
+        if (username) {
+            setFileFormData(prevData => ({
+                ...prevData,
+                user: username
+            }));
+        }
+    }, []);
 
     const handleFileChange = (event) => { 
         event.preventDefault()
@@ -75,6 +90,12 @@ function NewUploadData() {
 
     const handleFileSubmit = async(event) => { 
         event.preventDefault()
+        if (!fileFormData.user) {
+            console.error("Username is not present");
+            setStatus('failure');
+            return;
+        }
+
         console.log('File Form Data: ', fileFormData)
         const url = 'http://localhost:5000/upload'
         setStatus('uploading')
@@ -119,6 +140,7 @@ function NewUploadData() {
 
     return (
         <div class="page">
+            <User />
             <Menu />
             <h1>Data Upload</h1>
 

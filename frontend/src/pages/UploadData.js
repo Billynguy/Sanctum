@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Menu from "../components/Menu";
+import User from "../components/User";
 import "../styles/newUploadData.css";
 
 function NewUploadData() {
@@ -11,6 +12,7 @@ function NewUploadData() {
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
     const [fileFormData, setFileFormData] = useState({
+        username: ``,
         age: [0, 0],    // minAge, maxAge
         race: {
             white: false,
@@ -30,6 +32,15 @@ function NewUploadData() {
         treatment: '',
         survival: ''
     });
+
+    useEffect(() => {
+        if (sessionStorage.getItem('userLoggedIn') === "true") {
+            setFileFormData(prevState => ({
+                ...prevState,
+                username: JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'][`cognito:username`]
+            }));
+        }
+    }, []);
 
     const handleFileChange = (event) => { 
         event.preventDefault()
@@ -75,6 +86,10 @@ function NewUploadData() {
 
     const handleFileSubmit = async(event) => { 
         event.preventDefault()
+        if (!fileFormData.username) {
+            console.error("User not logged in");
+            return;
+        }
         console.log('File Form Data: ', fileFormData)
         const url = 'http://localhost:5000/upload'
         setStatus('uploading')
@@ -119,6 +134,7 @@ function NewUploadData() {
 
     return (
         <div class="page">
+            <User />
             <Menu />
             <h1>Data Upload</h1>
 

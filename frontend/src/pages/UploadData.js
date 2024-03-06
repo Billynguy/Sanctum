@@ -12,7 +12,7 @@ function NewUploadData() {
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
     const [fileFormData, setFileFormData] = useState({
-        username: ``,
+        user: ``,
         age: [0, 0],    // minAge, maxAge
         race: {
             white: false,
@@ -37,7 +37,7 @@ function NewUploadData() {
         if (sessionStorage.getItem('userLoggedIn') === "true") {
             setFileFormData(prevState => ({
                 ...prevState,
-                username: JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'][`cognito:username`]
+                user: JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'][`cognito:username`]
             }));
         }
     }, []);

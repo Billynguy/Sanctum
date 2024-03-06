@@ -100,6 +100,8 @@ function NewUploadData() {
 
         formData.append('metadata', JSON.stringify(fileFormData))
 
+        formData.append('user', fileFormData.user)
+
         const config = {
             headers: {
                 'content-type': 'multipart/form-data',

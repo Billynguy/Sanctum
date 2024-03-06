@@ -86,7 +86,7 @@ function NewUploadData() {
 
     const handleFileSubmit = async(event) => { 
         event.preventDefault()
-        if (!fileFormData.username) {
+        if (!fileFormData.user) {
             console.error("User not logged in");
             return;
         }

@@ -6,6 +6,8 @@ import Signup from "./pages/Signup";
 import UploadData from './pages/UploadData';
 import ExploreData from './pages/ExploreData';
 import Profile from './pages/Profile';
+import MyUploadedData from './pages/MyUploadedData';
+import AccessMyDatasets from './pages/AccessMyDatasets';
 // import './App.css';
 
 function App() {
@@ -18,6 +20,9 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/upload" element={<UploadData />} />
         <Route path="/explore" element={<ExploreData />} />
+        <Route path="/myuploaded" element={<MyUploadedData />} />
+        <Route path="/access" element={<AccessMyDatasets />} />
+      
       </Routes>
     </Router>
   );

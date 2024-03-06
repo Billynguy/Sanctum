@@ -22,7 +22,7 @@ function Profile() {
   return (
     <div>
       <Menu />
-      <User/>
+     <User/>
       
       <div className="header">
       <h2>Hello, {userSession['idToken']['payload']['name']}</h2>

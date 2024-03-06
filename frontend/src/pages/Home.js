@@ -6,7 +6,7 @@ import "../styles/home.css";
 function Home() {
   return (
     <div>
-      <User />
+      <User/>
       <Menu />
       <div className="header">
         <h1>Welcome to Sanctum</h1>

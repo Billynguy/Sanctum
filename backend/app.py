@@ -55,17 +55,21 @@ def next_page():
     
     return display_helper(response)
 
+# Displays top level folders with corresponding metadata. Assumes username is appended to front
+# Input: None
+# Output: List of dictionaries with keyname and metadata. Ex: [{'Key': 'cancer-set', 'Metadata':{'Name':'Bill', 'Age': 14}}, {'Key': 'tumors', 'Metadata':{'Name':'Jack', 'Age': 49}}]
 @app.route('/display_folders', methods=['GET'])
-def display_folders():
+def display_all():
     top_level_folders = list()
     client = boto3.client('s3')
     paginator = client.get_paginator('list_objects')
     result = paginator.paginate(Bucket=main_bucket, Delimiter='/')
     try:
         for prefix in result.search('CommonPrefixes'):
-            top_level_folders.append(prefix.get('Prefix'))
+            key = prefix.get('Prefix').split('-', 1)
+            top_level_folders.append(key[1].strip())
     except Exception as e: 
-        return jsonify({"error": f"{str(e)} - No prefixes found, bucket likely empty."}), 500
+        return jsonify({"error": f"{str(e)} - Either no prefixes found (empty bucket), or incorrect key schema (no username- appended to beginning of key)"})
     return top_level_folders
 
 # Downloads an array of images from s3 bucket and sends them to frontend
@@ -90,14 +94,14 @@ def download_files():
         return jsonify({"error": "Incorrect input format"}), 400
     
 # Uploads an array of files to the database, works with zip files and directories
-# Input: files: Array of files
+# Input: 'files': Array of files, 'metadata': List of metadata for each file. Ex: [{"Name: Bob", "Age: 14"}, {"Name: Sally", "Age: 27"}]
 # Output: Bool
 @app.route('/upload', methods=['POST'])
 def upload_files():
     if 'files' in request.files and 'user' in request.form:
         try:
             files = request.files.getlist('files')
-            metadata_arr = request.metadata.getlist('metadata') # Assumes list of metadata for each file is given in a list. Ex: [{"Name: Bob", "Age: 14"}, {"Name: Sally", "Age: 27"}]
+            metadata_arr = request.form.get('metadata') # Assumes list of metadata for each file is given in a list. Ex: [{"Name: Bob", "Age: 14"}, {"Name: Sally", "Age: 27"}]
             # success = upload_files(files, metadata_arr, main_bucket)
             user = request.form['user']
             success = upload_files(files, user, main_bucket)
@@ -110,9 +114,9 @@ def upload_files():
 
 # Updates metadata of object
 # Input: Bucket, object key, and updated metadata
-# Output: Bool if success
-@app.route('/edit-metadata/<bucket>/<key>/<metadata>', methods=['POST'])
-def edit_metadata(bucket, key, metadata):
+ # Output: Bool if success
+@app.route('/metadata/<bucket>/<key>/<metadata>', methods=['POST'])
+def update_metadata(bucket, key, metadata):
     boto3.setup_default_session(profile_name="dev")
     s3_client = boto3.client('s3')
     s3_client.copy_object(Key=key, Bucket=bucket,

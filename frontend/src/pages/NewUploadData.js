@@ -79,9 +79,12 @@ function NewUploadData() {
         const url = 'http://localhost:5000/upload'
         setStatus('uploading')
         const formData = new FormData()
-        files.map((file, index) => (
+        files.map((file) => (
             formData.append('files', file)
         ))
+
+        formData.append('metadata', JSON.stringify(fileFormData))
+        console.log('herro')
 
         const config = {
             headers: {

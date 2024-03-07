@@ -8,6 +8,7 @@ import ExploreData from './pages/ExploreData';
 import Profile from './pages/Profile';
 import MyUploadedData from './pages/MyUploadedData';
 import AccessMyDatasets from './pages/AccessMyDatasets';
+import PermissionDenied from './pages/PermissionDenied';
 // import './App.css';
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
         <Route path="/explore" element={<ExploreData />} />
         <Route path="/myuploaded" element={<MyUploadedData />} />
         <Route path="/access" element={<AccessMyDatasets />} />
-      
+        <Route path="/permissiondenied" element={<PermissionDenied />} />
       </Routes>
     </Router>
   );

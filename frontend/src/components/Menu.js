@@ -18,6 +18,8 @@ export default function TemporaryDrawer() {
     setOpen(newOpen);
     };
 
+    const loggedIn = sessionStorage.getItem('userLoggedIn') === "true";
+
     const DrawerList = (
         <Box sx={{ width: 500 }} role="presentation" onClick={toggleDrawer(false)}>
             <List>
@@ -54,7 +56,7 @@ export default function TemporaryDrawer() {
                 </ListItemButton>
             </ListItem>
 
-            <ListItem>
+            {!loggedIn && (<ListItem>
                 <ListItemButton>
                     <Link to="/login">
                         <ListItemText 
@@ -63,7 +65,7 @@ export default function TemporaryDrawer() {
                         />
                     </Link>
                 </ListItemButton>
-            </ListItem>
+            </ListItem>)}
 
             </List>
         </Box>

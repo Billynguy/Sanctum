@@ -56,11 +56,15 @@ function User() {
         alert("You have been signed out.");
         setAnchorEl(null);
         window.location.href = '/';
+        //window.location.reload();
     };
     return (
         <div className="user">
 
-            {loggedIn && (<IconButton
+            {loggedIn && (
+            <>
+            <Tooltip title="My account">
+            <IconButton
             onClick={handleClick}
             size="small"
             sx={{ ml: 2 }}
@@ -69,7 +73,7 @@ function User() {
             aria-expanded={open ? 'true' : undefined}
           >
             <Avatar sx={{ bgcolor: "rgb(199,106,255)"}}>{getUser()['cognito:username'].charAt(0)}</Avatar>
-          </IconButton>)}
+          </IconButton> </Tooltip> </>)}
 
           <Menu
         anchorEl={anchorEl}

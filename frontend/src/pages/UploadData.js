@@ -21,12 +21,21 @@ const Result = ({ status }) => {
 class UploadData extends React.Component {
     constructor(props) {
         super(props);
+        if (JSON.parse(sessionStorage.getItem('userSession')) === null) {
+            window.location.href = '/login'; //swtch to nav?
+        }
+        if(!JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload']['custom:user-type'].includes("Data Provider")){
+            window.location.href = '/permissiondenied';
+        }
+
         this.state = {
             files: [],
             uploadedFiles: [],
-            status: "initial"
+            status: "initial",
+            username: JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload']['cognito:username'],
         };
-    }
+        
+    }    
 
     handleFileChange = (event) => {
         event.preventDefault();
@@ -40,7 +49,7 @@ class UploadData extends React.Component {
         const url = 'http://localhost:5000/upload';
         this.setState({ status: "uploading" })
         const formData = new FormData();
-        formData.append('user', 'test_user');
+        formData.append('user', this.state.username);
         this.state.files.forEach((file, index) => {
             formData.append('files', file);
         })

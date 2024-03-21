@@ -33,6 +33,13 @@ The backend runs on http://localhost:5000, and each route below is an extension 
     Input: None
     Output: List of files
 
+`/adduser`: Adds a user to database
+    Input: {
+            'username': username
+            'userType': userType
+            }
+    Output: Boolean success value
+
 `/`: Test route on root path
 
     Input: None

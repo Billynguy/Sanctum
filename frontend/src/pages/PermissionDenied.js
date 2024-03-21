@@ -14,7 +14,6 @@ function PermissionDenied() {
      <User/>
       
       <div className="header">
-      <h2>Hello, {userSession['idToken']['payload']['name']}</h2>
       </div>    
       <p>You do not have permission to access this page.</p>
 

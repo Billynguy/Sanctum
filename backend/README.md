@@ -40,5 +40,6 @@ The backend runs on http://localhost:5000, and each route below is an extension 
 
 HTTP Response Codes:
 * 200: Success
+* 201: Success, new resource created
 * 400: Bad request format
 * 500: Internal error, described further in the response

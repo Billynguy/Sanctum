@@ -33,7 +33,7 @@ function NewUploadData() {
 
     const handleFileChange = (event) => { 
         event.preventDefault()
-        setFiles([...files, ...event.target.files])
+        setFiles([...event.target.files])
         setStatus('initial')
         setFileForm(true)
         console.log('changed')

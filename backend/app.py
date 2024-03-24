@@ -116,7 +116,7 @@ def list_existing_buckets():
         buckets.append(bucket["Name"])
     return buckets
 
-'''
+
 # Accepts an array of files to upload to the s3 bucket
 def upload_files(file_arr, user, bucket):    
     s3_client = boto3.client('s3')
@@ -126,7 +126,7 @@ def upload_files(file_arr, user, bucket):
             if file.filename.endswith(".zip"):
                 unzip_files(file, user)
             else:
-                s3_client.upload_fileobj(file, bucket, file.filename + "-" + user)
+                s3_client.upload_fileobj(file, bucket, user + '-' + file.filename)
         if (os.path.exists(zip_temp)):
             upload_dir(zip_temp, bucket)
             shutil.rmtree(zip_temp)
@@ -134,8 +134,8 @@ def upload_files(file_arr, user, bucket):
         logging.error(e)
         return False
     return True
-'''
 
+'''
 # Accepts an array of files to upload to the s3 bucket, generates a folder automatically
 def upload_files(file_arr, user, bucket):
     upload_temp = user + "-" + datetime.datetime.now().strftime(datetime_format)
@@ -153,6 +153,7 @@ def upload_files(file_arr, user, bucket):
         logging.error(e)
         return False
     return True
+'''
 
 # Handles uploads when a directory is passed
 def upload_dir(directory, bucket):

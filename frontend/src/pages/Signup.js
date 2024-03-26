@@ -53,22 +53,46 @@ const Signup = () => {
         });
     };
 
-    const onSubmitConfirmation = (event) => {
+    const onSubmitConfirmation = async (event) => {
         event.preventDefault();
         var cognitoUser = new CognitoUser({
             Username: username,
             Pool: UserPool,
         });
 
-        cognitoUser.confirmRegistration(confirmationCode, true, function(err, result) {
+        cognitoUser.confirmRegistration(confirmationCode, true, async function(err, result) {
             if (err) {
                 alert(err);
                 return;
             }
+            await addUser(username, userType);
             alert(username + " has been created.");
             login(cognitoUser);
             //console.log('confirmation result: ' + result);
         });
+    };
+
+    const addUser = async (username, userType) => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/adduser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username, userType: userType })
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An unexpected error occurred while adding the user.');
+        }
     };
 
     const login = (cognitoUser) => {

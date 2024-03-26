@@ -6,6 +6,7 @@ from zipfile import ZipFile
 from io import BytesIO
 from flask import Blueprint, request, jsonify
 import datetime
+import json
 
 
 bp = Blueprint('upload', __name__)
@@ -18,12 +19,14 @@ datetime_format = "%d-%m-%Y-%H-%M-%S"
 # Output: Bool
 @bp.route('/upload', methods=['POST'])
 def upload():
-    print(request.form)
     if 'files' in request.files and 'user' in request.form:
         try:
             time = datetime.datetime.now().strftime(datetime_format)
             files = request.files.getlist('files')
-            upload_metadata(request.form, time)
+            metadata_json = request.form['metadata']
+            metadata = json.loads(metadata_json)
+            upload_metadata(metadata, time)
+            print("hello")
             user = request.form['user']
             success = upload_files(files, user, "bucket-for-testing-boto3", time)
             return jsonify(success)
@@ -85,33 +88,32 @@ def unzip_files(file_name, user, upload_temp):
                 'treatment': string
                 'survival': string
             }
-    Output: Boolean success value
+    Output: 
 """
 def upload_metadata(formData, time):
-    uploadedId = ''
-    uploadedBy = formData['user']
+    uploadId = formData.get('user', '') + " - " + time
+    uploadedBy = formData.get('user', '')
     uploadedDate = time
-    name = formData['name']
+    name = formData.get('name', '')
     validated = False
-    format = formData['type']
-    size = formData['size']
-    ageRange = formData['age']
-    race = formData['race']
-    sex = formData['sex']
-    subtype = formData['subtype']
-    morphologic = formData['morphologic']
-    stage = formData['stage']
-    grade = formData['grade']
-    treatment = formData['treatment']
-    survival = formData['survival']
-    
+    format = formData.get('type', '')
+    size = formData.get('size', '')
+    ageRange = formData.get('age', [0, 0])
+    race = formData.get('race', {})
+    sex = formData.get('sex', {})
+    subtype = formData.get('subtype', '')
+    morphologic = formData.get('morphologic', '')
+    stage = formData.get('stage', '')
+    grade = formData.get('grade', '')
+    treatment = formData.get('treatment', '')
+    survival = formData.get('survival', '')
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('test-userbase')
-    
+    table = dynamodb.Table('test-uploadbase')
+    print("boohoo")
     try:
         table.put_item(
             Item={
-                'uploadedId': uploadedId,
+                'uploadId': uploadId,
                 'uploadedBy': uploadedBy,
                 'uploadedDate': uploadedDate,
                 'name': name,
@@ -129,7 +131,7 @@ def upload_metadata(formData, time):
                 'survival': survival
             }
         )
-        return jsonify({'message': 'Upload added successfully'}), 201
+        return 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

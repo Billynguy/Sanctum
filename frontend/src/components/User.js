@@ -1,21 +1,14 @@
-import React from 'react';
-import UserPool from "../components/UserPool";
+import React, { useContext } from 'react';
 import {Link, useNavigate} from "react-router-dom";
+import { SessionContext } from "../contexts/SessionContext";
+import UserPool from "../components/UserPool";
 import "../styles/user.css";
 
 function User() {
-
-
-    //const loggedIn = UserPool.getCurrentUser() != null; //what is the getcurrentuser attribute though
-    const loggedIn = sessionStorage.getItem('userLoggedIn') === "true";
-    const getUser = () => {
-        if (loggedIn) {
-            return JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'][`cognito:username`];
-        }
-    }
+    const { session } = useContext(SessionContext)
     return (
         <div className="user">
-            <Link to="/profile">{loggedIn && <p>{getUser()}</p>}</Link>
+            <Link to="/profile">{session.loggedIn && <p>{session.username}</p>}</Link>
         </div>
     );
 }   

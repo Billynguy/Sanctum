@@ -1,36 +1,38 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SessionContext } from '../contexts/SessionContext';
 import Menu from '../components/Menu';
-import User from "../components/User";
 import { Button } from "@mui/material";
 
+
 function Profile() {
-    const userSession = JSON.parse(sessionStorage.getItem('userSession'));
+    const { session, logout } = useContext(SessionContext);
+    const navigate = useNavigate()
 
-    if (userSession === null) {
-        window.location.href = '/login';
-    }
+    useEffect(() => {
+      if (!session.loggedIn) {
+          navigate('/login');
+      }
+    }, [session.loggedIn, navigate]);
+    
+    const { username, userType, email, phone, region } = session;
 
-    const onSignOut = (event) => {
-        event.preventDefault();
-        sessionStorage.setItem('userLoggedIn', "false");
-        sessionStorage.removeItem('userSession');
-        //window.location.reload();
-        alert("You have been signed out.");
-        window.location.href = '/';
+    const onSignOut = () => {
+      logout();
+      navigate('/');
+      alert("You have been signed out.");
     };
 
   return (
     <div>
       <Menu />
-     <User/>
-      
       <div className="header">
-      <h2>Hello, {userSession['idToken']['payload']['name']}</h2>
+        <h2>Hello, {username}</h2>
       </div>    
-      <p>User type: {userSession['idToken']['payload']['custom:user-type']}</p>
-      <p>Email: {userSession['idToken']['payload']['email']}</p>
-      <p>Phone: {userSession['idToken']['payload']['phone_number']}</p>
-      <p>Region: {userSession['idToken']['payload']['locale']}</p>
+      <p>User type: {userType}</p>
+      <p>Email: {email}</p>
+      <p>Phone: {phone}</p>
+      <p>Region: {region}</p>
       <Button variant="contained" onClick={onSignOut}>Sign Out</Button>
     </div>
   );

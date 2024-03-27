@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import Menu from "../components/Menu";
-import "../styles/loginSignup.css";
 import {Link} from "react-router-dom";
-import { Button } from "@mui/material";
-import UserPool from "../components/UserPool";
+import Menu from "../components/Menu";
 import { CognitoUserAttribute, CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
+import { SessionContext } from "../contexts/SessionContext";
+import UserPool from "../components/UserPool";
+import { Button } from "@mui/material";
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import Select from '@mui/material/Select';
@@ -13,6 +13,8 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
+import "../styles/loginSignup.css";
+
 
 const userTypes = ["Validator", "Data Provider"];
 
@@ -28,6 +30,7 @@ const Signup = () => {
     const [resendMessage, setResendMessage] = useState('');
     const [userType, setUserType] = useState('');
     const navigate = useNavigate()
+    const { login } = useContext(SessionContext);
 
 
     const onSubmit = (event) => {
@@ -67,7 +70,7 @@ const Signup = () => {
             }
             await addUser(username, userType);
             alert(username + " has been created.");
-            login(cognitoUser);
+            loggingIn(cognitoUser);
             //console.log('confirmation result: ' + result);
         });
     };
@@ -95,13 +98,20 @@ const Signup = () => {
         }
     };
 
-    const login = (cognitoUser) => {
+    const loggingIn = (cognitoUser) => {
         var authenticationDetails = new AuthenticationDetails( {Username: username, Password: password, });
 
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function(result) {
-                sessionStorage.setItem('userLoggedIn', "true");
-                sessionStorage.setItem('userSession', JSON.stringify(result));
+                alert("user " + cognitoUser.getUsername() + " has successfully logged in.");
+                const userData = {
+                    username: cognitoUser.getUsername(),
+                    userType: result.idToken.payload['custom:user-type'],
+                    email: result.idToken.payload.email,
+                    phone: result.idToken.payload.phone_number,
+                    region: result.idToken.payload.locale
+                };
+                login(userData);
                 navigate('/')
         },
             onFailure: function(err) {

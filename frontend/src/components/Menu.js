@@ -12,31 +12,81 @@ import DensitySmallIcon from '@mui/icons-material/DensitySmall';
 import { SessionContext } from "../contexts/SessionContext";
 import { Link } from 'react-router-dom';
 
-const ConditionalLinkListItem = ({ condition, route, pageName }) => {
-    if (condition) {
-        return (
-            <ListItem>
-                <ListItemButton>
-                    <Link to={route}>
+const ConditionalLinkListItem = ({ condition, route, pageName, type }) => {
+    const handleButtonClick = () => {
+        if (pageName == 'Validate Data' && (type != 'Validator' || !condition)) {
+            alert("Please login as a validator for access to the validator page");
+        }
+        else if (!condition) {
+            alert("Please login to access the " + pageName + " page");
+        }
+    };
+    if (pageName == 'Validate Data') {
+        if (condition && type == 'Validator') {
+            return (
+                <ListItem>
+                    <ListItemButton>
+                        <Link to={route}>
+                            <ListItemText
+                                primary={pageName}
+                                primaryTypographyProps={{ style: { fontSize: '24px' } }}
+                            />
+                        </Link>
+                    </ListItemButton>
+                </ListItem>
+            );
+        }
+        else {
+            return (
+                <ListItem>
+                    <ListItemButton onClick={handleButtonClick}>
                         <ListItemText
                             primary={pageName}
-                            primaryTypographyProps={{ style: { fontSize: '24px' } }}
+                            primaryTypographyProps={{
+                                style: {
+                                    fontSize: '24px',
+                                    color: 'grey'
+                                }
+                            }}
                         />
-                    </Link>
-                </ListItemButton>
-            </ListItem>
-        );
-    } else {
-        return (
-            <ListItem>
-                <ListItemButton>
-                    <ListItemText
-                        primary={pageName}
-                        primaryTypographyProps={{ style: { fontSize: '24px' } }}
-                    />
-                </ListItemButton>
-            </ListItem>
-        );
+                    </ListItemButton>
+                </ListItem>
+            );
+        }
+    }
+    else {
+        if (condition) {
+            return (
+                <ListItem>
+                    <ListItemButton>
+                        <Link to={route}>
+                            <ListItemText
+                                primary={pageName}
+                                primaryTypographyProps={{
+                                    style: {
+                                        fontSize: '24px'
+                                    }
+                                }}
+                            />
+                        </Link>
+                    </ListItemButton>
+                </ListItem>
+            );
+
+        }
+        else {
+            return (
+                <ListItem>
+                    <ListItemButton onClick={handleButtonClick}>
+                        <ListItemText
+                            primary={pageName}
+                            primaryTypographyProps={{ style: { fontSize: '24px',
+                            color: 'grey' } }}
+                        />
+                    </ListItemButton>
+                </ListItem>
+            );
+        }
     }
 };
 
@@ -77,7 +127,12 @@ export default function TemporaryDrawer() {
                         </Link>
                     </ListItemButton>
                 </ListItem>
-
+                <ConditionalLinkListItem
+                    condition={session.loggedIn}
+                    route="/validate"
+                    pageName="Validate Data"
+                    type={session.userType}
+                />
                 <ListItem>
                     <ListItemButton>
                         <Link to="/login">

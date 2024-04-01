@@ -5,7 +5,9 @@ import Login from './pages/Login';
 import Signup from "./pages/Signup";
 import UploadData from './pages/UploadData';
 import ExploreData from './pages/ExploreData';
+import ValidateData from './pages/ValidateData';
 import Profile from './pages/Profile';
+
 // import './App.css';
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
         <Route path="/upload" element={<UploadData />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/explore" element={<ExploreData />} />
+        <Route path="/validate" element={<ValidateData/>} />
       </Routes>
     </Router>
   );

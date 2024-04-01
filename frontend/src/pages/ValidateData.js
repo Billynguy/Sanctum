@@ -12,7 +12,7 @@ function ValidateData(){
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (session.loggedIn) {
+        if (session.loggedIn && session.userType=='Validator') {
             //whatever
         }
         else{

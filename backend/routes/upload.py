@@ -45,6 +45,7 @@ def upload_files(file_arr, user, bucket, time):
                 unzip_files(file, user, upload_temp)
             else:
                 file.save(os.path.join(upload_temp, file.filename))
+            updateUserUploads(user, file.filename)
         if (os.path.exists(upload_temp)):
             upload_dir(upload_temp, bucket)
             shutil.rmtree(upload_temp)

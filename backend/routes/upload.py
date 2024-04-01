@@ -45,6 +45,7 @@ def upload_files(file_arr, user, bucket, time):
                 unzip_files(file, user, upload_temp)
             else:
                 file.save(os.path.join(upload_temp, file.filename))
+            updateUserUploads(user, file.filename)
         if (os.path.exists(upload_temp)):
             upload_dir(upload_temp, bucket)
             shutil.rmtree(upload_temp)
@@ -132,6 +133,16 @@ def upload_metadata(formData, time):
             }
         )
         return 
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+def updateUserUploads(username, filename):
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-userbase')
+
+    try:
+        table.update_item(Key={'username': username}, UpdateExpression="SET uploads = list_append(uploads, :i)", ExpressionAttributeValues={':i': [filename],})
+        return jsonify({'message: successfully updated'}),200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

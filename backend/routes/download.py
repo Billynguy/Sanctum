@@ -87,4 +87,5 @@ def download_folders(file_arr, bucket):
         shutil.make_archive(download_temp, "zip", download_temp)
     shutil.rmtree(download_temp)
 
-download_folders(["jacqueeeeb-PKG - Biobank_CMB-GEC_v1/", "jacqueeeeb-PKG - Osteosarcoma Tumor Assessment/", "jacqueeeeb-PKG - SN-AM/"], main_bucket)
+# Example code
+#download_folders(["jacqueeeeb-PKG - Biobank_CMB-GEC_v1/", "jacqueeeeb-PKG - Osteosarcoma Tumor Assessment/", "jacqueeeeb-PKG - SN-AM/"], main_bucket)

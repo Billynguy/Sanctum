@@ -13,6 +13,7 @@ bp = Blueprint('upload', __name__)
 boto3.setup_default_session(profile_name="dev")
 
 datetime_format = "%d-%m-%Y-%H-%M-%S"
+upload_temp = "upload_temp"
 
 # Uploads an array of files to the database, works with zip files and directories
 # Input: 'files': Array of files, 'metadata': List of metadata for each file. Ex: [{"Name: Bob", "Age: 14"}, {"Name: Sally", "Age: 27"}]
@@ -27,24 +28,31 @@ def upload():
             metadata = json.loads(metadata_json)
             upload_metadata(metadata, time)
             user = request.form['user']
+        except Exception as e:
+            print("Metadata error")
+            logging.error(e)
+            return jsonify({"error": str(e)}), 500
+        try:
             success = upload_files(files, user, "bucket-for-testing-boto3")
             if (success):
                 return jsonify("File uploaded successfully")
             else:
                 return jsonify("Error uploading file"), 500
         except Exception as e:
-            logging(e)
+            print("File upload error")
+            logging.error(e)
             return jsonify({"error": str(e)}), 500
     else:
-        logging(e)
+        print("Input error")
+        logging.error(e)
         return jsonify({"error": "Incorrect input format"}), 400
     
 # Accepts an array of files to upload to the s3 bucket, generates a folder automatically
 def upload_files(file_arr, user, bucket):
-    client = boto3.client("s3")
-    upload_temp = "upload_temp"
+    if os.path.exists(upload_temp): # remove old download file if it exists
+        shutil.rmtree(upload_temp)
+    os.mkdir(upload_temp)
     try:
-        os.mkdir(upload_temp)
         for file in file_arr:
             if (file.filename.endswith(".zip")):
                 unzip_files(file, upload_temp)
@@ -52,9 +60,10 @@ def upload_files(file_arr, user, bucket):
                 file.save(os.path.join(upload_temp, file.filename))
             updateUserUploads(user, file.filename)
         if (os.path.exists(upload_temp)):
-            _, dirs, _ = os.walk(upload_temp)
-            directory = dirs[0]
-            upload_dir(directory, user, bucket)
+            for _, dirs, _ in os.walk(upload_temp):
+                for dir in dirs:
+                    upload_dir(os.path.join(upload_temp, dir), user, bucket)
+                break #only want to traverse to top level folder
             shutil.rmtree(upload_temp)
     except Exception as e:
         logging.error(e)
@@ -64,7 +73,7 @@ def upload_files(file_arr, user, bucket):
 # Handles uploads when a directory is passed
 def upload_dir(directory, user, bucket):
     filename = user + '-' + directory.split(os.path.sep)[1]
-    cmd = 'aws s3 cp ' + directory + ' s3://' + bucket + '/' + filename + ' --profile dev --recursive'
+    cmd = 'aws s3 cp \"' + directory + '\" \"s3://' + bucket + '/' + filename + '\" --profile dev --recursive'
     os.system(cmd)
 
 
@@ -140,6 +149,7 @@ def upload_metadata(formData, time):
         )
         return 
     except Exception as e:
+        logging.error(e)
         return jsonify({'error': str(e)}), 500
 
 def updateUserUploads(username, filename):

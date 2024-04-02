@@ -80,8 +80,12 @@ const ConditionalLinkListItem = ({ condition, route, pageName, type }) => {
                     <ListItemButton onClick={handleButtonClick}>
                         <ListItemText
                             primary={pageName}
-                            primaryTypographyProps={{ style: { fontSize: '24px',
-                            color: 'grey' } }}
+                            primaryTypographyProps={{
+                                style: {
+                                    fontSize: '24px',
+                                    color: 'grey'
+                                }
+                            }}
                         />
                     </ListItemButton>
                 </ListItem>

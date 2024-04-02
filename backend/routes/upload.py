@@ -26,28 +26,34 @@ def upload():
             metadata_json = request.form['metadata']
             metadata = json.loads(metadata_json)
             upload_metadata(metadata, time)
-            print("hello")
             user = request.form['user']
-            success = upload_files(files, user, "bucket-for-testing-boto3", time)
-            return jsonify(success)
+            success = upload_files(files, user, "bucket-for-testing-boto3")
+            if (success):
+                return jsonify("File uploaded successfully")
+            else:
+                return jsonify("Error uploading file"), 500
         except Exception as e:
+            logging(e)
             return jsonify({"error": str(e)}), 500
     else:
+        logging(e)
         return jsonify({"error": "Incorrect input format"}), 400
     
 # Accepts an array of files to upload to the s3 bucket, generates a folder automatically
-def upload_files(file_arr, user, bucket, time):
-    upload_temp = user + "-" + time
-    os.mkdir(upload_temp)
+def upload_files(file_arr, user, bucket):
+    upload_temp = "upload_temp"
     try:
+        os.mkdir(upload_temp)
         for file in file_arr:
-            if file.filename.endswith(".zip"):
-                unzip_files(file, user, upload_temp)
+            if (file.filename.endswith(".zip")):
+                unzip_files(file, upload_temp)
             else:
                 file.save(os.path.join(upload_temp, file.filename))
             updateUserUploads(user, file.filename)
         if (os.path.exists(upload_temp)):
-            upload_dir(upload_temp, bucket)
+            _, dirs, _ = os.walk(upload_temp)
+            directory = dirs[0]
+            upload_dir(directory, user, bucket)
             shutil.rmtree(upload_temp)
     except Exception as e:
         logging.error(e)
@@ -55,14 +61,14 @@ def upload_files(file_arr, user, bucket, time):
     return True
 
 # Handles uploads when a directory is passed
-def upload_dir(directory, bucket):
-    cmd = 'aws s3 cp ' + directory + ' s3://' + bucket + '/' + directory + ' --profile dev --recursive'
-    print(cmd)
+def upload_dir(directory, user, bucket):
+    filename = user + '-' + directory.split(os.path.sep)[1]
+    cmd = 'aws s3 cp ' + directory + ' s3://' + bucket + '/' + filename + ' --profile dev --recursive'
     os.system(cmd)
 
 
 # Internal function that handles zip files. Uses temporary folder zip_temp
-def unzip_files(file_name, user, upload_temp):
+def unzip_files(file_name, upload_temp):
     file_bytes = file_name.read()
     file_like_object = BytesIO(file_bytes)
     with ZipFile(file_like_object, 'r') as zip_ref:
@@ -110,7 +116,6 @@ def upload_metadata(formData, time):
     survival = formData.get('survival', '')
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
-    print("boohoo")
     try:
         table.put_item(
             Item={

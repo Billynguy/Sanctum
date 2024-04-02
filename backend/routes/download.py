@@ -69,8 +69,10 @@ def download_folders(file_arr, bucket):
         os.remove(download_temp + ".zip")
 
     for file in file_arr:
+        subfolder = os.path.join(download_temp, file)
+        os.mkdir(subfolder)
         for obj in bucket.objects.filter(Prefix=file):
-            target = os.path.join(download_temp, os.path.relpath(obj.key, file))
+            target = os.path.join(subfolder, os.path.relpath(obj.key, file))
             if not os.path.exists(os.path.dirname(target)):
                 os.makedirs(os.path.dirname(target))
             if obj.key[-1] == '/':
@@ -84,4 +86,4 @@ def download_folders(file_arr, bucket):
         shutil.make_archive(download_temp, "zip", download_temp)
     shutil.rmtree(download_temp)
 
-download_folders(["jacqueeeeb-Wallpaper"], main_bucket)
+#download_folders(["PKG - Biobank_CMB-GEC_v1/", "PKG - Osteosarcoma Tumor Assessment/", "PKG - SN-AM/"], main_bucket)

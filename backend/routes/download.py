@@ -69,7 +69,8 @@ def download_folders(file_arr, bucket):
         os.remove(download_temp + ".zip")
 
     for file in file_arr:
-        subfolder = os.path.join(download_temp, file)
+        stripped_filename = file[file.find('-') + 1:]
+        subfolder = os.path.join(download_temp, stripped_filename)
         os.mkdir(subfolder)
         for obj in bucket.objects.filter(Prefix=file):
             target = os.path.join(subfolder, os.path.relpath(obj.key, file))
@@ -86,4 +87,4 @@ def download_folders(file_arr, bucket):
         shutil.make_archive(download_temp, "zip", download_temp)
     shutil.rmtree(download_temp)
 
-#download_folders(["PKG - Biobank_CMB-GEC_v1/", "PKG - Osteosarcoma Tumor Assessment/", "PKG - SN-AM/"], main_bucket)
+download_folders(["jacqueeeeb-PKG - Biobank_CMB-GEC_v1/", "jacqueeeeb-PKG - Osteosarcoma Tumor Assessment/", "jacqueeeeb-PKG - SN-AM/"], main_bucket)

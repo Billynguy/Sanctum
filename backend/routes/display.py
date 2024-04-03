@@ -7,7 +7,7 @@ import datetime
 
 bp = Blueprint('display', __name__)
 boto3.setup_default_session(profile_name="dev")
-maxKeys = 50
+maxKeys = 1000
 
 # Returns a list of the first `maxKeys` files in a bucket, organized in dictionaries containing 
 #         the file name, location, type, size, and when it was last modified
@@ -38,7 +38,7 @@ def display_all():
         return jsonify({"error": f"{str(e)} - Either no prefixes found (empty bucket), or incorrect key schema (no username- appended to beginning of key)"})
     return top_level_folders
 
-
+'''
 # Returns the next `maxKeys` files in the bucket, organized as above
 # Input: None
 # Output: List of files
@@ -54,17 +54,10 @@ def next_page():
     response = client.list_objects_v2(Bucket="bucket-for-testing-boto3", MaxKeys=100, ContinuationToken=nextContinuationToken)
     
     return display_helper(response)
+'''
 
 # Internal helper function, accepts a response from list_objects_v2 and returns a list of their characteristics
 def display_helper(response):
-    global isTruncated
-    global nextContinuationToken
-
-    isTruncated = response["IsTruncated"]
-    if (isTruncated):
-        nextContinuationToken = response["NextContinuationToken"]
-    else:
-        nextContinuationToken = ""
     files = list()
     if 'Contents' in response:
         for obj in response['Contents']:

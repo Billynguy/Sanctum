@@ -44,7 +44,6 @@ def upload():
             return jsonify({"error": str(e)}), 500
     else:
         print("Input error")
-        logging.error(e)
         return jsonify({"error": "Incorrect input format"}), 400
     
 def upload_zips(file_arr, user, bucket):
@@ -57,7 +56,10 @@ def upload_zips(file_arr, user, bucket):
             filename = user + '-' + file.filename
             if (file.filename.endswith(".zip")):
                 file.save(os.path.join(upload_temp, filename))
-            updateUserUploads(user, file.filename)
+                updateUserUploads(user, file.filename)
+            else:
+                logging.warning(f"File {file.filename} is not a zip file and will not be uploaded.")
+                return False
         if (os.path.exists(upload_temp)):
             for _, _, files in os.walk(upload_temp):
                 for file in files:
@@ -67,43 +69,6 @@ def upload_zips(file_arr, user, bucket):
         logging.error(e)
         return False
     return True
-    
-# Accepts an array of files to upload to the s3 bucket, generates a folder automatically
-def upload_files(file_arr, user, bucket):
-    if os.path.exists(upload_temp): # remove old download file if it exists
-        shutil.rmtree(upload_temp)
-    os.mkdir(upload_temp)
-    try:
-        for file in file_arr:
-            if (file.filename.endswith(".zip")):
-                unzip_files(file, upload_temp)
-            else:
-                file.save(os.path.join(upload_temp, file.filename))
-            updateUserUploads(user, file.filename)
-        if (os.path.exists(upload_temp)):
-            for _, dirs, _ in os.walk(upload_temp):
-                for dir in dirs:
-                    upload_dir(os.path.join(upload_temp, dir), user, bucket)
-                break #only want to traverse to top level folder
-            shutil.rmtree(upload_temp)
-    except Exception as e:
-        logging.error(e)
-        return False
-    return True
-
-# Handles uploads when a directory is passed
-def upload_dir(directory, user, bucket):
-    filename = user + '-' + directory.split(os.path.sep)[1]
-    cmd = 'aws s3 cp \"' + directory + '\" \"s3://' + bucket + '/' + filename + '\" --profile dev --recursive'
-    os.system(cmd)
-
-
-# Internal function that handles zip files. Uses temporary folder zip_temp
-def unzip_files(file_name, upload_temp):
-    file_bytes = file_name.read()
-    file_like_object = BytesIO(file_bytes)
-    with ZipFile(file_like_object, 'r') as zip_ref:
-        zip_ref.extractall(upload_temp)
 
 """
     Adds an upload's metadata to database

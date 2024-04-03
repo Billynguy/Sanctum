@@ -38,24 +38,6 @@ def display_all():
         return jsonify({"error": f"{str(e)} - Either no prefixes found (empty bucket), or incorrect key schema (no username- appended to beginning of key)"})
     return top_level_folders
 
-'''
-# Returns the next `maxKeys` files in the bucket, organized as above
-# Input: None
-# Output: List of files
-@bp.route('/next_page', methods=['GET'])
-def next_page():
-    global nextContinuationToken
-    global isTruncated
-
-    if (not isTruncated):
-        return jsonify({"error": "No files to show"}), 400
-    
-    client = boto3.client('s3')
-    response = client.list_objects_v2(Bucket="bucket-for-testing-boto3", MaxKeys=100, ContinuationToken=nextContinuationToken)
-    
-    return display_helper(response)
-'''
-
 # Internal helper function, accepts a response from list_objects_v2 and returns a list of their characteristics
 def display_helper(response):
     files = list()

@@ -3,11 +3,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import '../styles/dataTable.css';
 import { Link } from 'react-router-dom';
 const columns = [
-    { field: 'name', headerName: 'Name', flex: 1,  renderCell: (params) => <Link to={`/view/${params.value}`}>{params.value}</Link>  },
-    { field: 'description', headerName: 'Format', flex: 2},
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'description', headerName: 'Description', flex: 2},
     { field: 'tags', headerName: 'Tags', flex: 0.50},
-    { field: 'format', headerName: 'Format', flex: 0.25 },
     { field: 'size', headerName: 'Size', flex: 0.25 },
+    { field: 'uploadedBy', headerName: 'Uploaded By', flex: 0.50},
     { field: 'modified', headerName: 'Last Modified', flex: 0.50 },
 ];
 
@@ -29,17 +29,33 @@ function DataTable(){
         setSearchTerm(event.target.value);
     };
 
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        const k = 1024;
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    };
+
+    const datetimeFormat = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    })
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5000/display_folders');
+                const response = await fetch('http://127.0.0.1:5000/display_files');
                 const names = await response.json();
-                const data = names.map(name => ({
-                    name: name,
-                    description: `Description for ${name}`,
-                    format: 'TBD',
-                    size: 'TBD',
-                    tags: 'TBD'
+                const data = names.map(obj => ({
+                    name: obj.Name,
+                    description: `Description for ${obj.Name}`,
+                    size: formatFileSize(obj.Size),
+                    modified: datetimeFormat.format(new Date(obj.LastModified)),
+                    uploadedBy: obj.UploadedBy
                 }));
                 setData(data);
                 setLoading(false);

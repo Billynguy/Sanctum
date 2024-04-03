@@ -1,11 +1,13 @@
 import boto3
 from flask import Blueprint, jsonify
+import logging
 import datetime
 
 
 
 bp = Blueprint('display', __name__)
 boto3.setup_default_session(profile_name="dev")
+maxKeys = 1000
 
 # Returns a list of the first `maxKeys` files in a bucket, organized in dictionaries containing 
 #         the file name, location, type, size, and when it was last modified
@@ -14,7 +16,7 @@ boto3.setup_default_session(profile_name="dev")
 @bp.route('/display_files', methods=['GET'])
 def display_files():
     client = boto3.client('s3')
-    response = client.list_objects_v2("bucket-for-testing-boto3", 100)
+    response = client.list_objects_v2(Bucket = "bucket-for-testing-boto3", MaxKeys = maxKeys)
 
     return display_helper(response)
 
@@ -36,46 +38,21 @@ def display_all():
         return jsonify({"error": f"{str(e)} - Either no prefixes found (empty bucket), or incorrect key schema (no username- appended to beginning of key)"})
     return top_level_folders
 
-
-# Returns the next `maxKeys` files in the bucket, organized as above
-# Input: None
-# Output: List of files
-@bp.route('/next_page', methods=['GET'])
-def next_page():
-    global nextContinuationToken
-    global isTruncated
-
-    if (not isTruncated):
-        return jsonify({"error": "No files to show"}), 400
-    
-    client = boto3.client('s3')
-    response = client.list_objects_v2(Bucket="bucket-for-testing-boto3", MaxKeys=100, ContinuationToken=nextContinuationToken)
-    
-    return display_helper(response)
-
 # Internal helper function, accepts a response from list_objects_v2 and returns a list of their characteristics
 def display_helper(response):
-    global isTruncated
-    global nextContinuationToken
-
-    isTruncated = response["IsTruncated"]
-    if (isTruncated):
-        nextContinuationToken = response["NextContinuationToken"]
-    else:
-        nextContinuationToken = ""
     files = list()
     if 'Contents' in response:
         for obj in response['Contents']:
-            fileInfo = obj['Key'].split('/')
+            key = obj['Key']
+            if (not key.endswith('.zip')):
+                continue
+
             item = dict()
             try:
-                item["Name"] = fileInfo[-1]
-                item["Location"] =  '/'.join(fileInfo[:-1])
-                item["Type"] = fileInfo[-1].split('.')[1]
-            except IndexError:
-                item["Name"] = obj['Key']
-                item["Location"] = "/"
-                item["Type"] = obj['Key'].split('.')[1]
+                item["Name"] = key[key.find('-') + 1 : key.find('.zip')]
+                item["UploadedBy"] = key[:key.find('-')]
+            except IndexError as e:
+                logging.error(e)
             if 'LastModified' in obj:
                 item["LastModified"] = obj["LastModified"]
             else:
@@ -85,12 +62,6 @@ def display_helper(response):
             else:
                 item["Size"] = 0
             files.append(item)
-        print(files)
         return files
     else:
         return jsonify({"error" : "Bucket is empty"}), 500
-
-#client = boto3.client('s3')
-#result = client.list_objects_v2(Bucket = "bucket-for-testing-boto3", MaxKeys = 50, Delimiter='/')
-
-#print(result)

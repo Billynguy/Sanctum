@@ -67,8 +67,6 @@ def display_helper(response):
     if 'Contents' in response:
         for obj in response['Contents']:
             fileInfo = obj['Key'].split('/')
-            if (fileInfo[0] != 'test_user-28-02-2024-16-29-16'):
-                continue
             item = dict()
             try:
                 item["Name"] = fileInfo[-1]
@@ -86,16 +84,13 @@ def display_helper(response):
                 item["Size"] = obj['Size']
             else:
                 item["Size"] = 0
-
-            # for experimental file storage system
-            try:
-                extraInfo = fileInfo[0].split('-')
-                item["UploadedBy"] = extraInfo[0]
-                item["UploadedOn"] = datetime.datetime.strptime('-'.join(extraInfo[1:]), datetime_format)
-            except Exception:
-                print('failed')
             files.append(item)
         print(files)
         return files
     else:
         return jsonify({"error" : "Bucket is empty"}), 500
+
+#client = boto3.client('s3')
+#result = client.list_objects_v2(Bucket = "bucket-for-testing-boto3", MaxKeys = 50, Delimiter='/')
+
+#print(result)

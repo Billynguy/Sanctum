@@ -22,7 +22,7 @@ def download_files():
     
     if 'files' in data:
         try:
-            download_files(data['files'], main_bucket)
+            download_zips(data['files'], main_bucket)
             if os.path.exists(download_temp + ".zip"):
                 return send_file(download_temp + ".zip", as_attachment=True)
             else:
@@ -87,5 +87,29 @@ def download_folders(file_arr, bucket):
         shutil.make_archive(download_temp, "zip", download_temp)
     shutil.rmtree(download_temp)
 
+def download_zips(file_arr, bucket):
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(bucket)
+
+    if os.path.exists(download_temp): # remove old download file if it exists
+        shutil.rmtree(download_temp)
+    os.mkdir(download_temp)
+
+    if os.path.exists(download_temp + ".zip"): # remove old zip file if it exists
+        os.remove(download_temp + ".zip")
+
+    for file in file_arr:
+        stripped_filename = file[file.find('-') + 1 : file.find('.zip')]
+        target = os.path.join(download_temp, stripped_filename)
+        for obj in bucket.objects.filter(Prefix=file):
+            try:
+                bucket.download_file(obj.key, target)
+            except Exception as e:
+                logging.error(e)
+    
+    if len([i for i in os.listdir(download_temp)]) > 0:
+        shutil.make_archive(download_temp, "zip", download_temp)
+    shutil.rmtree(download_temp)
+
 # Example code
-#download_folders(["jacqueeeeb-PKG - Biobank_CMB-GEC_v1/", "jacqueeeeb-PKG - Osteosarcoma Tumor Assessment/", "jacqueeeeb-PKG - SN-AM/"], main_bucket)
+#download_zips(["jacqueeeeb-PKG - Biobank_CMB-GEC_v1.zip", "jacqueeeeb-PKG - Osteosarcoma Tumor Assessment.zip"], main_bucket)

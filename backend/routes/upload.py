@@ -2,8 +2,6 @@ import boto3
 import os
 import shutil
 import logging
-from zipfile import ZipFile
-from io import BytesIO
 from flask import Blueprint, request, jsonify
 import datetime
 import json

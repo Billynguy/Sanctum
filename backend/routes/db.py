@@ -2,7 +2,7 @@ import boto3
 from flask import Blueprint, request, jsonify
 
 
-bp = Blueprint('users', __name__)
+bp = Blueprint('db', __name__)
 boto3.setup_default_session(profile_name="dev")
 
 """
@@ -32,7 +32,7 @@ def add_user():
                 'username': username,
                 'userType': userType,
                 'uploads': [],
-                'accessUploads': []
+                'purchases': []
             }
         )
         return jsonify({'message': 'User added successfully'}), 201
@@ -56,20 +56,20 @@ def getUploads(username):
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
     
-# Separate route for user type, uploaded sets, sets that can be accessed
+# Separate route for user type, uploaded sets, sets that have been purchased
 # update user table with info when a dataset is uploaded
     
 # Input: Username
-# Output: List of name of datasets user has access to
-@bp.route('/getDownloadedSets/<username>', methods=['GET'])
-def getDownloadedSets(username):
+# Output: List of name of datasets user has purchased (user-foldername format)
+@bp.route('/getPurchasedSets/<username>', methods=['GET'])
+def getPurchasedSets(username):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-userbase')
 
     try:
-        response = table.get_item(Key={'username': username}, ProjectionExpression='accessUploads')
+        response = table.get_item(Key={'username': username}, ProjectionExpression='purchases')
         if 'Item' in response:
-            attribute_value = response['Item'].get('accessUploads', {})
+            attribute_value = response['Item'].get('purchases', {})
             return jsonify({'uploads': attribute_value}), 200
 
     except Exception as e:

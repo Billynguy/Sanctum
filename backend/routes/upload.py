@@ -33,7 +33,7 @@ def upload():
             logging.error(e)
             return jsonify({"error": str(e)}), 500
         try:
-            success = upload_files(files, user, "bucket-for-testing-boto3")
+            success = upload_zips(files, user, "bucket-for-testing-boto3")
             if (success):
                 return jsonify("File uploaded successfully")
             else:
@@ -46,6 +46,27 @@ def upload():
         print("Input error")
         logging.error(e)
         return jsonify({"error": "Incorrect input format"}), 400
+    
+def upload_zips(file_arr, user, bucket):
+    client = boto3.client('s3')
+    if os.path.exists(upload_temp): # remove old download file if it exists
+        shutil.rmtree(upload_temp)
+    os.mkdir(upload_temp)
+    try:
+        for file in file_arr:
+            filename = user + '-' + file.filename
+            if (file.filename.endswith(".zip")):
+                file.save(os.path.join(upload_temp, filename))
+            updateUserUploads(user, file.filename)
+        if (os.path.exists(upload_temp)):
+            for _, _, files in os.walk(upload_temp):
+                for file in files:
+                    client.upload_file(os.path.join(upload_temp, file), bucket, file)
+            shutil.rmtree(upload_temp)
+    except Exception as e:
+        logging.error(e)
+        return False
+    return True
     
 # Accepts an array of files to upload to the s3 bucket, generates a folder automatically
 def upload_files(file_arr, user, bucket):

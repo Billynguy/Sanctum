@@ -125,16 +125,18 @@ export default function TemporaryDrawer() {
                         </Link>
                     </ListItemButton>
                 </ListItem>
-                <ListItem>
-                    <ListItemButton>
-                        <Link to="/login">
-                            <ListItemText
-                                primary="Log In"
-                                primaryTypographyProps={{ style: { fontSize: '24px' } }}
-                            />
-                        </Link>
-                    </ListItemButton>
-                </ListItem>
+                {!session.loggedIn && (
+                    <ListItem>
+                        <ListItemButton>
+                            <Link to="/login">
+                                <ListItemText
+                                    primary="Log In"
+                                    primaryTypographyProps={{ style: { fontSize: '24px' } }}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </ListItem>
+                )}
 
                 {session.loggedIn && (
                     <div>

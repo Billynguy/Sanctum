@@ -12,10 +12,10 @@ For Linux and Mac users, the batch script can be treated as a checklist and each
 ## API Structure
 The backend runs on http://localhost:5000, and each route below is an extension of this address. Methods that expect inputs must be made to POST and contain their values as JSON strings. Any responses are also returned as JSON strings, with accompanying HTTP response codes.
 
-`/download`: Downloads the specified images from the s3 bucket, zips them up, and sends them to the frontend
+`/download`: Downloads the specified folders from the s3 bucket, zips them up, and sends them to the frontend
 
     Input: {'files' : [file_name]}
-    Output: zipped folder containing requested files; number of files not downloaded successfully
+    Output: zipped folder containing requested folders
 
 `/upload`: Uploads an array of files to the database, works with zip files and with directories
 

@@ -25,9 +25,9 @@ def upload():
             files = request.files.getlist('files')
             metadata_json = request.form['metadata']
             metadata = json.loads(metadata_json)
-            upload_metadata(metadata, time)
             user = request.form['user']
             success = upload_files(files, user, "bucket-for-testing-boto3")
+            upload_metadata(metadata, time)
             if (success):
                 return jsonify("File uploaded successfully")
             else:
@@ -91,20 +91,21 @@ def unzip_files(file_name, upload_temp):
     Output: 
 """
 def upload_metadata(formData, time):
-    uploadedBy = formData.get('user', '')
-    uploadedDate = time
     filename = formData.get('name', '')
+    uploadedBy = formData.get('user', '')
     uploadId = uploadedBy + "-" + filename
+    uploadedDate = time
     validated = False
     format = formData.get('type', '')
     size = formData.get('size', '')
     description = formData.get('description', '')
+    
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
     try:
         table.put_item(
             Item={
-                'uploadId': uploadId,   # primary key
+                'uploadId': uploadId,
                 'uploadedBy': uploadedBy,
                 'uploadedDate': uploadedDate,
                 'filename': filename,

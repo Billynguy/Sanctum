@@ -14,15 +14,15 @@ import { Link } from 'react-router-dom';
 
 const ConditionalLinkListItem = ({ condition, route, pageName, type }) => {
     const handleButtonClick = () => {
-        if (pageName == 'Validate Data' && (type != 'Validator' || !condition)) {
+        if (pageName === 'Validate Data' && (type !== 'Validator' || !condition)) {
             alert("Please login as a validator for access to the validator page");
         }
         else if (!condition) {
             alert("Please login to access the " + pageName + " page");
         }
     };
-    if (pageName == 'Validate Data') {
-        if (condition && type == 'Validator') {
+    if (pageName === 'Validate Data') {
+        if (condition && type === 'Validator') {
             return (
                 <ListItem>
                     <ListItemButton>
@@ -115,12 +115,6 @@ export default function TemporaryDrawer() {
                     </ListItemButton>
                 </ListItem>
 
-                <ConditionalLinkListItem
-                    condition={session.loggedIn}
-                    route="/upload"
-                    pageName="Upload Data"
-                />
-
                 <ListItem>
                     <ListItemButton>
                         <Link to="/explore">
@@ -131,12 +125,6 @@ export default function TemporaryDrawer() {
                         </Link>
                     </ListItemButton>
                 </ListItem>
-                <ConditionalLinkListItem
-                    condition={session.loggedIn}
-                    route="/validate"
-                    pageName="Validate Data"
-                    type={session.userType}
-                />
                 <ListItem>
                     <ListItemButton>
                         <Link to="/login">
@@ -148,6 +136,24 @@ export default function TemporaryDrawer() {
                     </ListItemButton>
                 </ListItem>
 
+                {session.loggedIn && (
+                    <div>
+                        <ConditionalLinkListItem
+                            condition={session.loggedIn}
+                            route="/upload"
+                            pageName="Upload Data"
+                        />
+
+                        {session.userType === 'Validator' && (
+                                <ConditionalLinkListItem
+                                condition={session.loggedIn}
+                                route="/validate"
+                                pageName="Validate Data"
+                                type={session.userType}
+                            />
+                        )} 
+                    </div>
+                )}
             </List>
         </Box>
     );

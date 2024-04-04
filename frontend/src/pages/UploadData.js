@@ -16,7 +16,7 @@ function NewUploadData() {
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
     const [fileFormData, setFileFormData] = useState({
-        // user: ``,
+        user: ``,
         // age: [0, 0],    // minAge, maxAge
         // race: {
         //     white: false,

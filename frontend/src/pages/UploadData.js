@@ -16,7 +16,11 @@ function NewUploadData() {
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
     const [fileFormData, setFileFormData] = useState({
-        user: ``,
+        user: '',
+        filename: '',
+        format: '',
+        size: '',
+        description: ''
         // age: [0, 0],    // minAge, maxAge
         // race: {
         //     white: false,
@@ -35,7 +39,6 @@ function NewUploadData() {
         // grade: '',
         // treatment: '',
         // survival: ''
-        description: ''
     });
 
     useEffect(() => {
@@ -44,11 +47,20 @@ function NewUploadData() {
                 ...prevState,
                 user: session.username
             }));
+            if (files.length > 0) {
+                const file = files[0];
+                setFileFormData(prevState => ({
+                    ...prevState,
+                    filename: file.name,
+                    format: file.type,
+                    size: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+                }));
+            }
         }
         else{
             navigate('/login')
         }
-    }, []);
+    }, [files]);
 
     const handleFileChange = (event) => { 
         event.preventDefault()

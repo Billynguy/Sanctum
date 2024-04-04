@@ -25,6 +25,7 @@ def upload():
             metadata_json = request.form['metadata']
             metadata = json.loads(metadata_json)
             user = request.form['user']
+            upload_metadata(metadata, time)
         except Exception as e:
             print("Metadata error")
             logging.error(e)
@@ -83,12 +84,12 @@ def upload_zips(file_arr, user, bucket):
     Output: 
 """
 def upload_metadata(formData, time):
-    filename = formData.get('name', '')
+    filename = formData.get('filename', '')
     uploadedBy = formData.get('user', '')
     uploadId = uploadedBy + "-" + filename
     uploadedDate = time
     validated = False
-    format = formData.get('type', '')
+    format = formData.get('format', '')
     size = formData.get('size', '')
     description = formData.get('description', '')
     

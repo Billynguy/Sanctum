@@ -86,56 +86,32 @@ def unzip_files(file_name, upload_temp):
                 'validated': boolean
                 'format': string
                 'size': integer
-                'ageRange': [minAge, maxAge]
-                'race': object
-                'sex': object
-                'subtype': string
-                'morphologic': string
-                'stage': string
-                'grade': string
-                'treatment': string
-                'survival': string
+                'description': string
             }
     Output: 
 """
 def upload_metadata(formData, time):
-    uploadId = formData.get('user', '') + " - " + time
     uploadedBy = formData.get('user', '')
     uploadedDate = time
-    name = formData.get('name', '')
+    filename = formData.get('name', '')
+    uploadId = uploadedBy + "-" + filename
     validated = False
     format = formData.get('type', '')
     size = formData.get('size', '')
-    ageRange = formData.get('age', [0, 0])
-    race = formData.get('race', {})
-    sex = formData.get('sex', {})
-    subtype = formData.get('subtype', '')
-    morphologic = formData.get('morphologic', '')
-    stage = formData.get('stage', '')
-    grade = formData.get('grade', '')
-    treatment = formData.get('treatment', '')
-    survival = formData.get('survival', '')
+    description = formData.get('description', '')
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
     try:
         table.put_item(
             Item={
-                'uploadId': uploadId,
+                'uploadId': uploadId,   # primary key
                 'uploadedBy': uploadedBy,
                 'uploadedDate': uploadedDate,
-                'name': name,
+                'filename': filename,
                 'validated': validated,
                 'format': format,
                 'size': size,
-                'ageRange': ageRange,
-                'race': race,
-                'sex': sex,
-                'subtype': subtype,
-                'morphologic': morphologic,
-                'stage': stage,
-                'grade': grade,
-                'treatment': treatment,
-                'survival': survival
+                'description': description
             }
         )
         return 

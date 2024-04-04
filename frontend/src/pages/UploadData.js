@@ -6,7 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useNavigate } from 'react-router-dom';
 import Menu from "../components/Menu";
 import User from "../components/User";
-import "../styles/newUploadData.css";
+import "../styles/uploadData.css";
 
 function NewUploadData() {
     const { session } = useContext(SessionContext)
@@ -16,25 +16,26 @@ function NewUploadData() {
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
     const [fileFormData, setFileFormData] = useState({
-        user: ``,
-        age: [0, 0],    // minAge, maxAge
-        race: {
-            white: false,
-            black: false,
-            hispanic: false,
-            native: false,
-            asian: false
-        },
-        gender: {
-            male: false,
-            female: false
-        },
-        subtype: '',
-        morphologic: '',
-        stage: '',
-        grade: '',
-        treatment: '',
-        survival: ''
+        // user: ``,
+        // age: [0, 0],    // minAge, maxAge
+        // race: {
+        //     white: false,
+        //     black: false,
+        //     hispanic: false,
+        //     native: false,
+        //     asian: false
+        // },
+        // gender: {
+        //     male: false,
+        //     female: false
+        // },
+        // subtype: '',
+        // morphologic: '',
+        // stage: '',
+        // grade: '',
+        // treatment: '',
+        // survival: ''
+        description: ''
     });
 
     useEffect(() => {
@@ -59,36 +60,40 @@ function NewUploadData() {
 
     const handleFormChange = (event) => {
         const {name, checked, value} = event.target;
-        if (name === 'male' || name === 'female') {
-            setFileFormData({
-                ...fileFormData, 
-                gender: {
-                    ...fileFormData.gender, 
-                    [name]: checked
-                }
-            })
-        } else if (name === 'white' || name === 'black' || name === 'hispanic' || name === 'native' || name === 'asian') {
-            setFileFormData({
-                ...fileFormData, 
-                race: {
-                    ...fileFormData.race, 
-                    [name]: checked
-                }
-            })
-        } else if (name === 'minAge' || name === 'maxAge') {
-            const newValue = parseInt(value);
-            const minAge = name === 'minAge' ? newValue : fileFormData.age[0];
-            const maxAge = name === 'maxAge' ? newValue : fileFormData.age[1];
-            setFileFormData({
-                ...fileFormData, 
-                age: [minAge, maxAge]
-            })
-        } else {
-            setFileFormData({
-                ...fileFormData, 
-                [name]: value
-            });
-        }
+        // if (name === 'male' || name === 'female') {
+        //     setFileFormData({
+        //         ...fileFormData, 
+        //         gender: {
+        //             ...fileFormData.gender, 
+        //             [name]: checked
+        //         }
+        //     })
+        // } else if (name === 'white' || name === 'black' || name === 'hispanic' || name === 'native' || name === 'asian') {
+        //     setFileFormData({
+        //         ...fileFormData, 
+        //         race: {
+        //             ...fileFormData.race, 
+        //             [name]: checked
+        //         }
+        //     })
+        // } else if (name === 'minAge' || name === 'maxAge') {
+        //     const newValue = parseInt(value);
+        //     const minAge = name === 'minAge' ? newValue : fileFormData.age[0];
+        //     const maxAge = name === 'maxAge' ? newValue : fileFormData.age[1];
+        //     setFileFormData({
+        //         ...fileFormData, 
+        //         age: [minAge, maxAge]
+        //     })
+        // } else {
+        //     setFileFormData({
+        //         ...fileFormData, 
+        //         [name]: value
+        //     });
+        // }
+        setFileFormData({
+            ...fileFormData,
+            description: value
+        })
     }
 
     const handleFileSubmit = async(event) => { 
@@ -165,42 +170,8 @@ function NewUploadData() {
             {fileForm && 
                 (
                     <div>
-                        <p>Next, provide some metadata to characterize the dataset(s) you are uploading:</p>
-                        <p2>DEMOGRAPHIC INFORMATION</p2> <br/>
-
-                        <div>
-                            <p2>Patient age range (in years): </p2> 
-                            <input type="number" name="minAge" value={fileFormData.age[0]} onChange={handleFormChange} placeholder="0"/> 
-                            <p2> to </p2>
-                            <input type="number" name="maxAge" value={fileFormData.age[1]} onChange={handleFormChange} placeholder="100"/>
-                        </div>
-
-                        <div>
-                            <p2>Patient race (select all that apply): </p2>
-                            <input type="checkbox" name="white" checked={fileFormData.race.white} onChange={handleFormChange}/> <label for="white">White or Caucasian </label>
-                            <input type="checkbox" name="black" checked={fileFormData.race.black} onChange={handleFormChange}/> <label for="black">Black or African American </label>
-                            <input type="checkbox" name="hispanic" checked={fileFormData.race.hispanic} onChange={handleFormChange}/> <label for="hispanic">Hispanic or Latino </label>
-                            <input type="checkbox" name="native" checked={fileFormData.race.native} onChange={handleFormChange}/> <label for="native">Native American or Alaskan Native </label>
-                            <input type="checkbox" name="asian" checked={fileFormData.race.asian} onChange={handleFormChange}/> <label for="asian">Asian </label>
-                        </div>
-
-                        <div>
-                            <p2>Patient sex (select all that apply): </p2>
-                            <input type="checkbox" name="male" checked={fileFormData.gender.male} onChange={handleFormChange}/> <label for="male">Male </label>
-                            <input type="checkbox" name="female" checked={fileFormData.gender.female} onChange={handleFormChange}/> <label for="female">Female </label>
-                        </div>
-
-                        <div>
-                            <br/>
-                            <p2> DIAGNOSIS INFORMATION (if malignancy)<br/>
-                                Subtype <input type="text" name="subtype" value={fileFormData.subtype} onChange={handleFormChange}/> <br/>
-                                Morphologic features <input type="text" name="morphologic" value={fileFormData.morphologic} onChange={handleFormChange}/> <br/>
-                                Stage <input type="text" name="stage" value={fileFormData.stage} onChange={handleFormChange}/> <br/>
-                                Grade <input type="text" name="grade" value={fileFormData.grade} onChange={handleFormChange}/> <br/>
-                                Treatment <input type="text" name="treatment" value={fileFormData.treatment} onChange={handleFormChange}/> <br/>
-                                Survival <input type="text" name="survival" value={fileFormData.survival} onChange={handleFormChange}/> <br/>
-                            </p2>
-                        </div>
+                        <p>Next, provide a detailed description to characterize the dataset(s) you are uploading:</p>
+                        <textarea class="description" name="description" rows="4" cols="50" value={fileFormData.description} onChange={handleFormChange}/>
                     </div>
             )}
 

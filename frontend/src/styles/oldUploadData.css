@@ -1,0 +1,43 @@
+body{
+    
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.title{
+    text-align: center;
+}
+
+.title p{
+    display: block;
+    font-size: 16px;
+}
+.fileForm{
+    text-align:left;
+    padding: 10px;
+}
+.fileForm p {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+   
+}
+.uploadSection{
+    display: flex;
+    align-items: center;
+}
+.uploadContainer {
+   padding-right: 100px;
+   margin-left: 10px;
+}
+.chooseButton {
+    padding-right: 10px;
+    flex: 1;
+}
+.progressContainer {
+    text-align: center;
+}
+.bottom {
+    margin-top: 250px;
+}

@@ -24,8 +24,8 @@ def upload():
             files = request.files.getlist('files')
             metadata_json = request.form['metadata']
             metadata = json.loads(metadata_json)
-            upload_metadata(metadata, time)
             user = request.form['user']
+            upload_metadata(metadata, time)
         except Exception as e:
             print("Metadata error")
             logging.error(e)
@@ -79,35 +79,20 @@ def upload_zips(file_arr, user, bucket):
                 'validated': boolean
                 'format': string
                 'size': integer
-                'ageRange': [minAge, maxAge]
-                'race': object
-                'sex': object
-                'subtype': string
-                'morphologic': string
-                'stage': string
-                'grade': string
-                'treatment': string
-                'survival': string
+                'description': string
             }
     Output: 
 """
 def upload_metadata(formData, time):
-    uploadId = formData.get('user', '') + " - " + time
+    filename = formData.get('filename', '')
     uploadedBy = formData.get('user', '')
+    uploadId = uploadedBy + "-" + filename
     uploadedDate = time
-    name = formData.get('name', '')
     validated = False
-    format = formData.get('type', '')
+    format = formData.get('format', '')
     size = formData.get('size', '')
-    ageRange = formData.get('age', [0, 0])
-    race = formData.get('race', {})
-    sex = formData.get('sex', {})
-    subtype = formData.get('subtype', '')
-    morphologic = formData.get('morphologic', '')
-    stage = formData.get('stage', '')
-    grade = formData.get('grade', '')
-    treatment = formData.get('treatment', '')
-    survival = formData.get('survival', '')
+    description = formData.get('description', '')
+    
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
     try:
@@ -116,19 +101,11 @@ def upload_metadata(formData, time):
                 'uploadId': uploadId,
                 'uploadedBy': uploadedBy,
                 'uploadedDate': uploadedDate,
-                'name': name,
+                'filename': filename,
                 'validated': validated,
                 'format': format,
                 'size': size,
-                'ageRange': ageRange,
-                'race': race,
-                'sex': sex,
-                'subtype': subtype,
-                'morphologic': morphologic,
-                'stage': stage,
-                'grade': grade,
-                'treatment': treatment,
-                'survival': survival
+                'description': description
             }
         )
         return 

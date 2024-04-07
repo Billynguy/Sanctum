@@ -52,7 +52,7 @@ function DataTable(){
                 const names = await response.json();
                 const data = names.map(obj => ({
                     name: obj.Name,
-                    description: `Description for ${obj.Name}`,
+                    description: obj.Description,
                     size: formatFileSize(obj.Size),
                     modified: datetimeFormat.format(new Date(obj.LastModified)),
                     uploadedBy: obj.UploadedBy

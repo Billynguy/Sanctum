@@ -21,7 +21,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/explore" element={<ExploreData />} />
         <Route path="/validate" element={<ValidateData/>} />
-        <Route path="/view/:id" element = {<ViewData/>}/>
+        <Route path="/view/:id/:uploadedBy" element = {<ViewData/>}/>
       </Routes>
     </Router>
   );

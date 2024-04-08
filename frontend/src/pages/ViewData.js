@@ -1,56 +1,77 @@
 import React from 'react';
 import Menu from "../components/Menu";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
+import "../styles/viewData.css";
+import Button from '@mui/material/Button';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
+
 //main parent component
 function ViewData(props) {
   const { id, uploadedBy } = useParams();
   const [description, setDescription] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const url = 'http://localhost:5000/fetchDescription/' + uploadedBy + '-' + id + '.zip';
+  const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   axios.get(url)
-  //     .then(response => {
-  //       setDescription(response.data.description);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching data:', error);
-  //     });
-  //   setIsLoading(false);
-  // }, []);
+
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const response = await axios.get(url);
-            setDescription(response.data.description);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        } finally {
-            setIsLoading(false); // Set isLoading to false regardless of success or failure
-        }
+      try {
+        const response = await axios.get(url);
+        setDescription(response.data.description);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false); // Set isLoading to false regardless of success or failure
+      }
     };
 
     fetchData();
-}, []);
+  }, []);
 
-
+  const handleBackButton = () => {
+    navigate('/explore')
+  }
 
   return (
     <div>
       {isLoading ? (
-        <div className = "loadingContatiner">
-        <p>Loading ...</p>
-        <CircularProgress />
+        <div className="loadingContainer">
+          <p>Loading ...</p>
+          <CircularProgress color="secondary" />
         </div>
       ) : (
         <div>
           <Menu />
           <div>
             <Description title={id} description={description}></Description>
+          </div>
+          <div>
+            <Button className="backButton"
+              variant="contained"
+              onClick={handleBackButton}
+              color="secondary"
+              startIcon={<ArrowBackIosNewIcon></ArrowBackIosNewIcon>}
+              sx={{
+                position: 'absolute',
+                bottom: '20px', 
+                left: '28px', 
+              }}>Go Back</Button>
+
+            <Button className="purchaseDataButton"
+              variant="contained"
+              color="secondary"
+              sx={{
+                position: 'absolute',
+                bottom: '20px', 
+                right: '28px', 
+              }}>Purchase Dataset</Button>
+              
           </div>
         </div>
       )}
@@ -62,8 +83,10 @@ function ViewData(props) {
 function Description(props) {
   return (
     <div>
-      <h1>{props.title}</h1>
-      <p>{props.description}</p>
+      <h1 className='title'>{props.title}</h1>
+      <h3>Description:</h3>
+      <p className='description'>{props.description}</p>
+
     </div>
   );
 };

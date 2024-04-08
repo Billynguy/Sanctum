@@ -1,0 +1,27 @@
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    /* Set flex direction to column */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.title {
+    text-align: center;
+}
+
+.backButton {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    size: 200;
+    
+}
+
+.purchaseDataButton{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    color: red;
+}

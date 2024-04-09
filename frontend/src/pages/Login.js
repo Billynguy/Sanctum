@@ -27,21 +27,7 @@ function Login () {
                 alert(err.message || JSON.stringify(err));
             },
         });
-
-        cognitoUser.getUserAttributes(function (err, result) {
-            if (err) {
-              alert(err.message || JSON.stringify(err));
-              console.log(err);
-              console.log(result);
-              console.log(cognitoUser);
-              return;
-            }
-            for (let i = 0; i < result.length; i++) {
-              console.log(
-                'attribute ' + result[i].getName() + ' has value ' + result[i].getValue()
-              );
-            }
-          });
+        //usersession
 
     };
 

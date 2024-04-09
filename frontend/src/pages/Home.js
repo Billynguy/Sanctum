@@ -10,6 +10,7 @@ function Home() {
       <Menu />
       <div className="header">
         <h1>Welcome to Sanctum</h1>
+        <h1>time to style :3</h1>
       </div>
     </div>
   );

@@ -1,16 +1,19 @@
-import React, { useState } from "react";
-import Menu from "../components/Menu";
-import "../styles/loginSignup.css";
+import React, { useState, useContext } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import { Button } from "@mui/material";
-import UserPool from "../components/UserPool";
 import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
-import User from "../components/User";
+import { SessionContext } from "../contexts/SessionContext";
+import UserPool from "../components/UserPool";
+import Menu from "../components/Menu";
+import { Button } from "@mui/material";
+import "../styles/loginSignup.css";
+
 
 function Login () {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate()
+    const { login } = useContext(SessionContext);
+
 
     const onSubmit = (event) => {
         var authenticationDetails = new AuthenticationDetails( {Username: username, Password: password, });
@@ -19,8 +22,14 @@ function Login () {
         cognitoUser.authenticateUser(authenticationDetails, {
 	        onSuccess: function(result) {
                 alert("user " + cognitoUser.getUsername() + " has successfully logged in.");
-                sessionStorage.setItem('userLoggedIn', "true");
-                sessionStorage.setItem('userSession', JSON.stringify(result));
+                const userData = {
+                    username: cognitoUser.getUsername(),
+                    userType: result.idToken.payload['custom:user-type'],
+                    email: result.idToken.payload.email,
+                    phone: result.idToken.payload.phone_number,
+                    region: result.idToken.payload.locale
+                };
+                login(userData);
                 navigate('/')
 	    },
             onFailure: function(err) {
@@ -33,7 +42,6 @@ function Login () {
 
     return (
         <div>
-            <User/>
             <Menu/>
             <div className="centered-login-form">
                 <h1>Enter Sanctum</h1>

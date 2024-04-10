@@ -106,13 +106,9 @@ function Profile() {
     }
   }
 
-
-
   return (
     <div>
       <Menu />
-     <User/>
-      
       <div className="header">
       <h2>Hello, {details['name']} 
       <EditIcon sx={{ fontSize: 15 }} onClick={() => onEditButtonClick(setEditName, editName)}/></h2>

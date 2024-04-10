@@ -1,5 +1,4 @@
-import React from 'react';
-import UserPool from "../components/UserPool";
+import React, { useContext } from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -14,12 +13,14 @@ import Settings from '@mui/icons-material/Settings';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import Logout from '@mui/icons-material/Logout';
+import { Context } from "../contexts/SessionContext";
 
 import "../styles/user.css";
 
 function User() {
-    const navigate = useNavigate()
-    const [anchorEl, setAnchorEl] = React.useState(null);
+  const { session } = useContext(SessionContext);
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -27,41 +28,33 @@ function User() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-    //const loggedIn = UserPool.getCurrentUser() != null; //what is the getcurrentuser attribute though
-    const loggedIn = sessionStorage.getItem('userLoggedIn') === "true";
-    const getUser = () => {
-        if (loggedIn) {
-            return JSON.parse(sessionStorage.getItem('userSession'))['idToken']['payload'];
-        }
-    }
-
+ 
     const onProfileClick = () => {
-        setAnchorEl(null);
-        navigate('/profile');
+      setAnchorEl(null);
+      navigate('/profile');
     };
 
     const onMyUploaded = () => {
-        setAnchorEl(null);
-        navigate('/myuploaded');
+      setAnchorEl(null);
+      navigate('/myuploaded');
     };
 
     const onAccessMyData = () => {
-        setAnchorEl(null);
-        navigate('/access');
+      setAnchorEl(null);
+      navigate('/access');
     };
 
     const onSignOut = () => {
-        sessionStorage.setItem('userLoggedIn', "false");
-        sessionStorage.removeItem('userSession');
-        alert("You have been signed out.");
-        setAnchorEl(null);
-        window.location.href = '/';
-        //window.location.reload();
+      session.logout();
+      alert("You have been signed out.");
+      setAnchorEl(null);
+      window.location.href = '/';
+      //window.location.reload();
     };
     return (
         <div className="user">
 
-            {loggedIn && (
+            {session.loggedIn && (
             <>
             <Tooltip title="My account">
             <IconButton
@@ -72,7 +65,7 @@ function User() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ bgcolor: "rgb(199,106,255)"}}>{getUser()['cognito:username'].charAt(0)}</Avatar>
+            <Avatar sx={{ bgcolor: "rgb(199,106,255)"}}>{session.username.charAt(0)}</Avatar>
           </IconButton> </Tooltip> </>)}
 
           <Menu

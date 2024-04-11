@@ -108,6 +108,7 @@ function Profile() {
 
   return (
     <div>
+      <User/>
       <Menu />
       <div className="header">
       <h2>Hello, {details['name']} 

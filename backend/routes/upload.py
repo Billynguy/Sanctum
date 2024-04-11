@@ -114,11 +114,12 @@ def upload_metadata(formData, time):
         return jsonify({'error': str(e)}), 500
 
 def updateUserUploads(username, filename):
+    uploadId = username + "-" + filename
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-userbase')
 
     try:
-        table.update_item(Key={'username': username}, UpdateExpression="SET uploads = list_append(uploads, :i)", ExpressionAttributeValues={':i': [filename],})
+        table.update_item(Key={'username': username}, UpdateExpression="SET uploads = list_append(uploads, :i)", ExpressionAttributeValues={':i': [uploadId],})
         return jsonify({'message: successfully updated'}),200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

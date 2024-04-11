@@ -18,7 +18,7 @@ import { SessionContext } from "../contexts/SessionContext";
 import "../styles/user.css";
 
 function User() {
-  const { session } = useContext(SessionContext);
+  const { session, logout } = useContext(SessionContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -28,7 +28,7 @@ function User() {
   const handleClose = () => {
     setAnchorEl(null);
   };
- 
+
     const onProfileClick = () => {
       setAnchorEl(null);
       navigate('/profile');
@@ -45,7 +45,7 @@ function User() {
     };
 
     const onSignOut = () => {
-      session.logout();
+      logout();
       alert("You have been signed out.");
       setAnchorEl(null);
       window.location.href = '/';

@@ -5,17 +5,16 @@ import DataTable from '../components/DataTable';
 import { SessionContext } from "../contexts/SessionContext";
 import { formatFileSize, datetimeFormat } from '../components/utils';
 
-
-function MyUploadedData() {
+function PurchasedData() {
   const { session } = useContext(SessionContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUploadedData = async () => {
+    const fetchPurchasedData = async () => {
       try {
         const username = session.username
-        const response = await fetch(`http://127.0.0.1:5000/display_my_uploads?username=${username}`);
+        const response = await fetch(`http://127.0.0.1:5000/display_purchases?username=${username}`);
         const names = await response.json();
         const data = names.map(obj => ({
             name: obj.Name,
@@ -31,19 +30,19 @@ function MyUploadedData() {
         setLoading(false);
       }
     };
-    fetchUploadedData();
+    fetchPurchasedData();
   }, []);
 
-  return (
-    <div>
-      <User/>
-      <Menu />
-      <div className="header">
-        <h1>Datasets I've Uploaded</h1>
+    return (
+      <div>
+        <User/>
+        <Menu />
+        <div className="header">
+        <h1>Datasets I've Purchased</h1>
+        </div>    
+        <DataTable data={data} loading={loading} />
       </div>
-      <DataTable data={data} loading={loading} />
-    </div>
-  );
+    );
 }
 
-export default MyUploadedData;
+export default PurchasedData;

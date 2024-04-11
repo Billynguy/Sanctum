@@ -1,5 +1,5 @@
 import boto3
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import logging
 import datetime
 
@@ -17,7 +17,6 @@ maxKeys = 1000
 def display_files():
     client = boto3.client('s3')
     response = client.list_objects_v2(Bucket = "bucket-for-testing-boto3", MaxKeys = maxKeys)
-
     return display_helper(response)
 
 
@@ -81,3 +80,45 @@ def display_helper(response):
         return files
     else:
         return jsonify({"error" : "Bucket is empty"}), 500
+    
+# 
+#         
+# Input: 
+# Output: 
+@bp.route('/display_my_uploads', methods=['GET'])
+def my_uploaded_files():
+    username = request.args.get('username')
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-userbase')
+    response = table.get_item(Key={'username': username})
+    if 'Item' not in response:
+        return jsonify({"error": "User not found or no uploads yet"}), 404
+    uploads = response['Item'].get('uploads', [])
+    files = []
+    for upload_id in uploads:
+        s3_client = boto3.client('s3')
+        s3_response = s3_client.head_object(Bucket="bucket-for-testing-boto3", Key=upload_id)
+        dynamo_response = display_helper({'Contents': [{'Key': upload_id, 'LastModified': s3_response['LastModified'], 'Size': s3_response['ContentLength']}]} )
+        files.extend(dynamo_response)
+    return jsonify(files)
+
+# 
+#         
+# Input: 
+# Output: 
+@bp.route('/display_purchases', methods=['GET'])
+def my_purchased_files():
+    username = request.args.get('username')
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-userbase')
+    response = table.get_item(Key={'username': username})
+    if 'Item' not in response:
+        return jsonify({"error": "User not found or no uploads yet"}), 404
+    purchases = response['Item'].get('purchases', [])
+    files = []
+    for upload_id in purchases:
+        s3_client = boto3.client('s3')
+        s3_response = s3_client.head_object(Bucket="bucket-for-testing-boto3", Key=upload_id)
+        dynamo_response = display_helper({'Contents': [{'Key': upload_id, 'LastModified': s3_response['LastModified'], 'Size': s3_response['ContentLength']}]} )
+        files.extend(dynamo_response)
+    return jsonify(files)

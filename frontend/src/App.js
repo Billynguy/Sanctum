@@ -22,7 +22,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/upload" element={<UploadData />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/explore" element={<ExploreData />} /
+        <Route path="/explore" element={<ExploreData />} />
         <Route path="/myuploaded" element={<MyUploadedData />} />
         <Route path="/access" element={<AccessMyDatasets />} />
         <Route path="/permissiondenied" element={<PermissionDenied />} />

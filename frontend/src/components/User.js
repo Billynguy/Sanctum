@@ -13,7 +13,7 @@ import Settings from '@mui/icons-material/Settings';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import Logout from '@mui/icons-material/Logout';
-import { Context } from "../contexts/SessionContext";
+import { SessionContext } from "../contexts/SessionContext";
 
 import "../styles/user.css";
 

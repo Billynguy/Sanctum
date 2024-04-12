@@ -7,7 +7,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import '../styles/menu.css';
 import DensitySmallIcon from '@mui/icons-material/DensitySmall';
 import { SessionContext } from "../contexts/SessionContext";
 import { Link } from 'react-router-dom';
@@ -162,10 +161,13 @@ export default function TemporaryDrawer() {
 
     return (
         <div>
-            <Button onClick={toggleDrawer(true)}><DensitySmallIcon /></Button>
+            <Button onClick={toggleDrawer(true)}><DensitySmallIcon style={{ color: 'rgb(199,106,255)' }}/></Button>
             <Drawer open={open} onClose={toggleDrawer(false)}>
                 {DrawerList}
             </Drawer>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img src="/assets/icons8-dna-48.png" alt="DNA Icon" />
+            </div>
         </div>
     );
 }

@@ -1,6 +1,62 @@
-.header {
+
+
+.section {
+    margin: 0px 0px 100px 24px;
+    transition: opacity 0.5s ease;  /* Fade-in transition */
+  }
+
+  .fade {
+    animation: fadeAnimation 4s forwards; /* Apply fade-in animation */
+  }
+
+  @keyframes fadeAnimation {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .simple-section-title {
+    font-size: 48px;
+    color:rgb(205, 130, 252);
+  }
+
+  .section-text {
+    margin-right: 500px;
+    font-size: 24px;
+    line-height: 2;
+  }
+
+  .incentives-section-title {
+    font-size: 48px;
+    color:rgb(205, 130, 252);
+    text-align: center;
+  }
+
+  .incentives-section-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
     justify-content: center;
+    align-items: center;
+  }
+
+  .incentives-section-bubble {
+    margin: 25px;
+    width: 400px;
+    height: 400px;
+    background-color: rgb(154, 28, 233);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    h3 {
+      margin: 0px;
+    }
+    p {
+      color: white;
+      font-size: 22px;
+      padding: 24px;
+    }
   }

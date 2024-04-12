@@ -14,7 +14,7 @@ function ValidateData(){
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate()
-
+    const [tableKey, setTableKey] = useState(0);
     useEffect(() => {
         if (session.loggedIn && session.userType==='Validator') {
             const fetchData = async () => {
@@ -41,12 +41,17 @@ function ValidateData(){
         else{
             navigate('/login')
         }
-    }, []);
+    }, [tableKey]);
+
+    const handleTableReload = () => {
+        setTableKey(prevKey => prevKey + 1); // Update tableKey to trigger re-render
+        setLoading(true)
+    };
 
     return (
         <div>
             <h1>Validate Data Page</h1>
-            <ValidatorTable data={data} loading={loading}></ValidatorTable>
+            <ValidatorTable data={data} loading={loading} onValidation = {handleTableReload}></ValidatorTable>
         </div>
     );
 }

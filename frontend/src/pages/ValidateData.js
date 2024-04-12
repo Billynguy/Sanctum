@@ -50,6 +50,7 @@ function ValidateData(){
 
     return (
         <div>
+            <Menu/>
             <h1>Validate Data Page</h1>
             <ValidatorTable data={data} loading={loading} onValidation = {handleTableReload}></ValidatorTable>
         </div>

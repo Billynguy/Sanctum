@@ -1,5 +1,7 @@
 #!/bin/bash
 
+chmod +x s.sh
+
 if [ ! -d .venv ]; then
     echo "Creating new Python virtual environment in .venv..."
     python3 -m venv .venv

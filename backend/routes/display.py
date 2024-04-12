@@ -80,7 +80,57 @@ def display_helper(response):
         return files
     else:
         return jsonify({"error" : "Bucket is empty"}), 500
-    
+
+#display nonvalidated files
+@bp.route('/display_nonvalidated_files', methods=['GET'])
+def display_nonvalidated_files():
+    client = boto3.client('s3')
+    response = client.list_objects_v2(Bucket = "bucket-for-testing-boto3", MaxKeys = maxKeys)
+    return display_nonvalidated_helper(response)
+
+# Internal helper function, accepts a response from list_objects_v2 and returns a list of their characteristics
+def display_nonvalidated_helper(response):
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-uploadbase')
+    files = list()
+
+    if 'Contents' in response:
+        for obj in response['Contents']:
+            key = obj['Key']
+            if (not key.endswith('.zip')):
+                continue
+            
+            dynamoResponse = table.get_item(Key={'uploadId': key})
+            if 'Item' not in dynamoResponse:
+                logging.warning("Item not found")
+                continue
+            dynamoResponse = dynamoResponse['Item']
+            if dynamoResponse['validated']:
+               continue
+
+            item = dict()
+            try:
+                item['Description'] = dynamoResponse['description']
+            except Exception as e:
+                logging.warning(e)
+                item['Description'] = ""
+            try:
+                item["Name"] = key[key.find('-') + 1 : key.find('.zip')]
+                item["UploadedBy"] = key[:key.find('-')]
+            except IndexError as e:
+                logging.error(e)
+            if 'LastModified' in obj:
+                item["LastModified"] = obj["LastModified"]
+            else:
+                item["LastModified"] = None
+            if 'Size' in obj:
+                item["Size"] = obj['Size']
+            else:
+                item["Size"] = 0
+            files.append(item)
+        return files
+    else:
+        return jsonify({"error" : "Bucket is empty"}), 500
 # 
 #         
 # Input: 

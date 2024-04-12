@@ -6,9 +6,7 @@ import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 
-const handleDownload = (fileName, user) => {
 
-}
 
 function getRowId(row) {
     return row.name;
@@ -19,7 +17,7 @@ function ValidatorTable({ data, loading, onValidation }) {
         { field: 'name', headerName: 'Name', flex: 1, },
         { field: 'description', headerName: 'Description', flex: 2 },
         { field: 'tags', headerName: 'Tags', flex: 0.25 },
-        { field: 'size', headerName: 'Size', flex: 0.25 },
+        { field: 'size', headerName: 'Size', flex: 0.45 },
         { field: 'uploadedBy', headerName: 'Uploaded By', flex: 0.50 },
         { field: 'modified', headerName: 'Last Modified', flex: 0.50 },
         {
@@ -27,7 +25,7 @@ function ValidatorTable({ data, loading, onValidation }) {
             headerName: 'Download Button',
             flex: 0.5,
             renderCell: (params) => (
-                <Button onClick={() => handleDownload(params.row.name)} color = "secondary" >Download</Button>
+                <Button onClick={() => handleDownload(params.row.name, params.row.uploadedBy)} color="secondary" >Download</Button>
             ),
         },
         {
@@ -35,7 +33,7 @@ function ValidatorTable({ data, loading, onValidation }) {
             headerName: 'Validate Button',
             flex: 0.5,
             renderCell: (params) => (
-                <Button onClick={() => handleValidate(params.row.name, params.row.uploadedBy)} color = "secondary">Validate</Button>
+                <Button onClick={() => handleValidate(params.row.name, params.row.uploadedBy)} color="secondary">Validate</Button>
             ),
         },
     ];
@@ -47,6 +45,7 @@ function ValidatorTable({ data, loading, onValidation }) {
         },
     };
     const navigate = useNavigate()
+
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
     };
@@ -65,8 +64,44 @@ function ValidatorTable({ data, loading, onValidation }) {
                     console.error(error)
                 })
         }
-    
+
     }
+
+    const handleDownload = async (fileName, user) => {
+        let name = user + '-' + fileName + '.zip';
+        let routeurl = 'http://127.0.0.1:5000/download';
+        console.log(name)
+        try {
+            const response = await axios.post(routeurl, { files: [name] });
+
+        // Parse the response data to get the pre-signed URL
+        const presignedUrl = response.data.presigned_url;
+
+        // Use the pre-signed URL to download the file
+        const downloadResponse = await axios.get(presignedUrl, {
+            responseType: 'blob' // Specify the response type as blob
+        });
+
+        // Create a Blob object from the downloaded file data
+        const blob = new Blob([downloadResponse.data]);
+
+        // Create a temporary URL for the Blob object
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a download link and trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = user + '-' + fileName + '.zip';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url); // Clean up the temporary URL
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+
     const filteredRows = data.filter(row =>
         Object.values(row).some(value =>
             typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())

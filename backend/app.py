@@ -6,6 +6,7 @@ from routes.upload import bp as upload_bp
 from routes.download import bp as download_bp
 from routes.misc import bp as misc_bp
 from routes.db import bp as db_bp
+from routes.square import bp as square_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +17,7 @@ app.register_blueprint(upload_bp)
 app.register_blueprint(download_bp)
 app.register_blueprint(misc_bp)
 app.register_blueprint(db_bp)
+app.register_blueprint(square_bp)
 
 
 if __name__ == '__main__':

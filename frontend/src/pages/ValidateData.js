@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
-import axios from 'axios';
-import Button from '@mui/material/Button';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useNavigate } from 'react-router-dom';
 import Menu from "../components/Menu";
-import User from "../components/User";
 import ValidatorTable from "../components/ValidatorTable";
 import { formatFileSize, datetimeFormat } from '../components/utils';
 

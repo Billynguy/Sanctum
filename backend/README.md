@@ -28,6 +28,11 @@ The backend runs on http://localhost:5000, and each route below is an extension 
     Input: None
     Output: List of files
 
+`/payment`: Handles the Square payment requests by the frontend
+
+    Input: Source_ID, which identifies the product
+    Output: Success value and amount paid
+
 `/next_page`: Returns the next 100 files in the bucket, if there are more files to show. `/display_files` must be called first for this function to work
 
     Input: None

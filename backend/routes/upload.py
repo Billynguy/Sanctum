@@ -92,7 +92,8 @@ def upload_metadata(formData, time):
     format = formData.get('format', '')
     size = formData.get('size', '')
     description = formData.get('description', '')
-    
+    price = max(int(size.split('.')[0]), 2) * 100 # Price in cents per megabyte, minimum $2.00
+
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
     try:
@@ -105,7 +106,8 @@ def upload_metadata(formData, time):
                 'validated': validated,
                 'format': format,
                 'size': size,
-                'description': description
+                'description': description,
+                'price': price
             }
         )
         return 

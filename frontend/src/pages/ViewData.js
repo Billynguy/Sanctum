@@ -38,6 +38,13 @@ function ViewData(props) {
     navigate('/explore')
   }
 
+  const handlePurchaseButton = () => {
+    const url = 'http://localhost:3000/purchase/' + encodeURIComponent(id) + '/' + encodeURIComponent(uploadedBy);
+    const windowName = 'Purhcase ' + {id};
+    const windowFeatures = 'width=600,height=400left=' + (window.screen.width / 2 - 300) + ',top=' + (window.screen.height / 2 - 200);
+    window.open(url, windowName, windowFeatures)
+  }
+
   return (
     <div>
       {isLoading ? (
@@ -65,6 +72,7 @@ function ViewData(props) {
 
             <Button className="purchaseDataButton"
               variant="contained"
+              onClick={handlePurchaseButton}
               color="secondary"
               sx={{
                 position: 'absolute',

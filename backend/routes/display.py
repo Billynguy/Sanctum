@@ -1,7 +1,6 @@
 import boto3
 from flask import Blueprint, jsonify, request
 import logging
-import datetime
 
 
 
@@ -48,7 +47,7 @@ def display_helper(response):
             key = obj['Key']
             if (not key.endswith('.zip')):
                 continue
-            
+            print(key)
             dynamoResponse = table.get_item(Key={'uploadId': key})
             if 'Item' not in dynamoResponse:
                 logging.warning("Item not found")

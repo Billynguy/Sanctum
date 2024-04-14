@@ -11,6 +11,7 @@ import MyUploadedData from './pages/MyUploadedData';
 import PurchasedData from './pages/PurchasedData';
 import PermissionDenied from './pages/PermissionDenied';
 import ViewData from './pages/ViewData';
+import SquarePayment from './pages/SquarePayment';
 // import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/permissiondenied" element={<PermissionDenied />} />
         <Route path="/validate" element={<ValidateData/>} />
         <Route path="/view/:id/:uploadedBy" element = {<ViewData/>}/>
+        <Route path="/purchase/:id/:uploadedBy" element = {<SquarePayment/>}/>
       </Routes>
     </Router>
   );

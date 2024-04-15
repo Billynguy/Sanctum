@@ -27,6 +27,11 @@ if [ $? -ne 0 ]; then
     pip install --upgrade flask_cors
 fi
 
+pip show square > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    pip install --upgrade square
+fi
+
 echo "Connecting to AWS"
 aws sso login --profile dev
 

@@ -1,5 +1,8 @@
 @echo off
 
+echo Connecting to AWS
+aws sso login --profile dev
+
 if not exist .venv (
     echo Creating new Python virtual environment in .venv...
     python -m venv .venv
@@ -29,9 +32,6 @@ pip show square > nul 2>&1
 if %errorlevel% neq 0 (
     pip install --upgrade square
 )
-
-echo Connecting to AWS
-call aws sso login --profile dev
 
 echo Starting server...
 python app.py

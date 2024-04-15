@@ -2,6 +2,9 @@
 
 chmod +x s.sh
 
+echo "Connecting to AWS"
+aws sso login --profile dev
+
 if [ ! -d .venv ]; then
     echo "Creating new Python virtual environment in .venv..."
     python3 -m venv .venv
@@ -31,9 +34,6 @@ pip show square > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     pip install --upgrade square
 fi
-
-echo "Connecting to AWS"
-aws sso login --profile dev
 
 echo "Starting server..."
 python app.py

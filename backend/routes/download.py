@@ -12,6 +12,31 @@ boto3.setup_default_session(profile_name="dev")
 download_temp = "Sanctum_Images"
 main_bucket = "bucket-for-testing-boto3"
 
+def generate_presigned_url(bucket_name, object_key, expiration=3600000):
+    
+    s3_client = boto3.client('s3')
+    
+    
+    try:
+        url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': object_key[0],
+                
+            },
+            ExpiresIn=expiration,
+            
+        )
+        
+   
+    except ClientError as e:
+        print(e)
+        logging.error(e)
+        
+    
+    return url
+
 # Downloads an array of images from s3 bucket and sends them to frontend
 # Input: files: Array of folders to download
 # Output: Zipped up directory containing downloaded folders, 
@@ -22,11 +47,14 @@ def download_files():
     
     if 'files' in data:
         try:
-            download_zips(data['files'], main_bucket)
-            if os.path.exists(download_temp + ".zip"):
-                return send_file(download_temp + ".zip", as_attachment=True)
-            else:
-                return jsonify({"error": "requested file(s) not found"}), 500
+            # download_zips(data['files'], main_bucket)
+            # if os.path.exists(download_temp + ".zip"):
+            #     return send_file(download_temp + ".zip", as_attachment=True)
+            # else:
+            #     return jsonify({"error": "requested file(s) not found"}), 500
+            presigned_url = generate_presigned_url(main_bucket, data['files'])
+            
+            return jsonify({'presigned_url': presigned_url}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     else:
@@ -110,6 +138,7 @@ def download_zips(file_arr, bucket):
     if len([i for i in os.listdir(download_temp)]) > 0:
         shutil.make_archive(download_temp, "zip", download_temp)
     shutil.rmtree(download_temp)
+
 
 # Example code
 #download_zips(["jacqueeeeb-PKG - Biobank_CMB-GEC_v1.zip", "jacqueeeeb-PKG - Osteosarcoma Tumor Assessment.zip"], main_bucket)

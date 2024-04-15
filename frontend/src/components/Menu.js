@@ -100,6 +100,8 @@ export default function TemporaryDrawer() {
         setOpen(newOpen);
     };
 
+    const loggedIn = sessionStorage.getItem('userLoggedIn') === "true";
+
     const DrawerList = (
         <Box sx={{ width: 500 }} role="presentation" onClick={toggleDrawer(false)}>
             <List>

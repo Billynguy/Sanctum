@@ -30,7 +30,7 @@ if %errorlevel% neq 0 (
 
 pip show square > nul 2>&1
 if %errorlevel% neq 0 (
-    pip install --upgrade square
+    pip install --upgrade squareup
 )
 
 echo Starting server...

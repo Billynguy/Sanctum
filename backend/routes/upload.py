@@ -104,6 +104,7 @@ def upload_metadata(formData, time):
                 'uploadedDate': uploadedDate,
                 'filename': filename,
                 'validated': validated,
+                'validator': "",
                 'format': format,
                 'size': size,
                 'description': description,

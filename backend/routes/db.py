@@ -112,16 +112,27 @@ def deleteSet(username, filename):
             return jsonify({'error': str(e)}), 500
     
 
-@bp.route('/fetchDescription/<filename>')
-def fetchDescription(filename):
+@bp.route('/fetchData/<filename>')
+def fetchMetaData(filename):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
 
     try:
-        response = table.get_item(Key={'uploadId': filename}, ProjectionExpression='description')
+        response = table.get_item(Key={'uploadId': filename})
         if 'Item' in response:
             description = response['Item'].get('description', {})
-            return jsonify({'description': description}), 200
+            price = response['Item'].get('price', {})
+            size = response['Item'].get('size', {})
+            uploadedBy = response['Item'].get('uploadedBy', {})
+            uploadedDate = response['Item'].get('uploadedDate', {})
+            data = {
+                'description': description,
+                'price': price,
+                'size': size,
+                'uploadedBy': uploadedBy,
+                'uploadedDate': uploadedDate
+            }
+            return jsonify(data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     

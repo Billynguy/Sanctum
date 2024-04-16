@@ -11,17 +11,22 @@
     text-align: center;
 }
 
-.backButton {
+.body {
+    flex: 1; /* Allow the body to grow to fill available space */
+    padding-bottom: 60px; /* Ensure space for buttons at the bottom */
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: space-between;
     position: fixed;
     bottom: 0;
     left: 0;
-    size: 200;
-    
-}
-
-.purchaseDataButton{
-    position: fixed;
-    bottom: 0;
     right: 0;
-    color: red;
-}
+    padding: 10px; /* Adjust padding as needed */
+    background-color: white; /* Ensure buttons are visible */
+    border-top: 1px solid #ccc; /* Optional: add a border above buttons */
+  }
+
+
+

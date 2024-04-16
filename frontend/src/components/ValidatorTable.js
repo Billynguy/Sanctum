@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from "react-router-dom";
 import '../styles/dataTable.css';
-import { Link } from 'react-router-dom';
+import { SessionContext } from "../contexts/SessionContext";
 import Button from '@mui/material/Button';
 import axios from 'axios';
 
@@ -37,6 +37,8 @@ function ValidatorTable({ data, loading, onValidation }) {
             ),
         },
     ];
+    const { session } = useContext(SessionContext);
+    const username = session.username
 
     const [searchTerm, setSearchTerm] = useState('');
     const initialPaginationState = {
@@ -50,7 +52,7 @@ function ValidatorTable({ data, loading, onValidation }) {
         setSearchTerm(event.target.value);
     };
     const handleValidate = (fileName, user) => {
-        let url = 'http://127.0.0.1:5000/validateItem/' + user + '-' + fileName + '.zip'
+        let url = 'http://127.0.0.1:5000/validateItem/' + user + '-' + fileName + '.zip/' + username
         const confirmed = window.confirm('Are u sure you would like to validate this item')
         if (confirmed) {
             axios.get(url)

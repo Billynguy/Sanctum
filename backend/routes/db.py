@@ -32,7 +32,8 @@ def add_user():
                 'username': username,
                 'userType': userType,
                 'uploads': [],
-                'purchases': []
+                'purchases': [],
+                'wallet': 0
             }
         )
         return jsonify({'message': 'User added successfully'}), 201
@@ -136,8 +137,8 @@ def updateDescription(filename, description):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@bp.route('/validateItem/<filename>')
-def validateItem(filename):
+@bp.route('/validateItem/<filename>/<username>')
+def validateItem(filename, username):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('test-uploadbase')
 
@@ -147,6 +148,24 @@ def validateItem(filename):
             UpdateExpression="SET validated = :val",
             ExpressionAttributeValues={':val': True}
         )
+        table.update_item(
+            Key={'uploadId': filename},
+            UpdateExpression="SET validator = :val",
+            ExpressionAttributeValues={':val': username}
+        )
         return jsonify({'message': 'successfully validated'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+## ToDo   
+@bp.route('/getWallet/<username>', methods=['GET'])
+def getWallet(username):
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-userbase')
+    try:
+        response = table.get_item(Key={'username': username}, ProjectionExpression='wallet')
+        if 'Item' in response:
+            attribute_value = response['Item'].get('wallet', {})
+            return jsonify({'wallet': attribute_value}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

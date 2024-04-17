@@ -135,3 +135,18 @@ def updateDescription(filename, description):
         return jsonify({'message: successfully updated'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@bp.route('/validateItem/<filename>')
+def validateItem(filename):
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-uploadbase')
+
+    try:
+        table.update_item(
+            Key={'uploadId': filename},
+            UpdateExpression="SET validated = :val",
+            ExpressionAttributeValues={':val': True}
+        )
+        return jsonify({'message': 'successfully validated'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

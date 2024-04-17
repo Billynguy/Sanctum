@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import '../styles/dataTable.css';
 import { Link } from 'react-router-dom';
@@ -15,10 +15,8 @@ function getRowId(row){
     return row.name;
 }
 
-function DataTable(){
+function DataTable( {data, loading }){
     const [searchTerm, setSearchTerm] = useState('');
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
     const initialPaginationState = {
         pagination: {
             paginationModel: { page: 0, pageSize: 10 },
@@ -28,45 +26,6 @@ function DataTable(){
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
     };
-
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
-        const k = 1024;
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    };
-
-    const datetimeFormat = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric'
-    })
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://127.0.0.1:5000/display_files');
-                const names = await response.json();
-                const data = names.map(obj => ({
-                    name: obj.Name,
-                    description: obj.Description,
-                    size: formatFileSize(obj.Size),
-                    modified: datetimeFormat.format(new Date(obj.LastModified)),
-                    uploadedBy: obj.UploadedBy
-                }));
-                setData(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     const filteredRows = data.filter(row =>
         Object.values(row).some(value =>

@@ -13,9 +13,26 @@ import PermissionDenied from './pages/PermissionDenied';
 import ViewData from './pages/ViewData';
 import SquarePayment from './pages/SquarePayment';
 // import './App.css';
+import { createTheme, alpha, getContrastRatio } from '@mui/material/styles';
+import { ThemeProvider } from "@emotion/react";
+
+const violetBase = '#7F00FF';
+const violetMain = alpha(violetBase, 0.7);
+
+const theme = createTheme({
+  palette: {
+    violet: {
+      main: violetMain,
+      light: alpha(violetBase, 0.5),
+      dark: alpha(violetBase, 0.9),
+      contrastText: getContrastRatio(violetMain, '#fff') > 4.5 ? '#fff' : '#111',
+    },
+  },
+});
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -32,6 +49,7 @@ function App() {
         <Route path="/purchase/:id/:uploadedBy" element = {<SquarePayment/>}/>
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 

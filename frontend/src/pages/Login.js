@@ -49,7 +49,7 @@ function Login () {
                 <br></br>
                 <input className="credential-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>
                 <br></br>
-                <Button variant="contained" onClick={onSubmit}>Log In</Button>
+                <Button color="violet" variant="contained" onClick={onSubmit}>Log In</Button>
                 <p>Don't have an account? <Link to="/signup" className="sign-up-button">Sign up</Link></p>
             </div>
         </div>

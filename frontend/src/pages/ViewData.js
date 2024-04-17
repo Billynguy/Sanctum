@@ -13,17 +13,30 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 function ViewData(props) {
   const { id, uploadedBy } = useParams();
   const [description, setDescription] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [size, setSize] = useState(null);
+  const [uploadedDate, setUploadedDate] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const url = 'http://localhost:5000/fetchDescription/' + uploadedBy + '-' + id + '.zip';
+  const url = 'http://localhost:5000/fetchData/' + uploadedBy + '-' + id + '.zip';
   const navigate = useNavigate()
-
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(url);
         setDescription(response.data.description);
+        setPrice(response.data.price / 100);
+        setSize(response.data.size);
+        const dateStr = response.data.uploadedDate;
+
+        // Split the date string into its components
+        const [day, month, year, hour, minute, second] = dateStr.split('-');
+
+        // Create a new Date object
+        const parsedDate = new Date(year, month - 1, day);
+
+        // Format the date as desired
+        const formattedDate = parsedDate.toLocaleDateString();
+        setUploadedDate(formattedDate);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -40,7 +53,7 @@ function ViewData(props) {
 
   const handlePurchaseButton = () => {
     const url = 'http://localhost:3000/purchase/' + encodeURIComponent(id) + '/' + encodeURIComponent(uploadedBy);
-    const windowName = 'Purhcase ' + {id};
+    const windowName = 'Purhcase ' + { id };
     const windowFeatures = 'width=600,height=400left=' + (window.screen.width / 2 - 300) + ',top=' + (window.screen.height / 2 - 200);
     window.open(url, windowName, windowFeatures)
   }
@@ -55,31 +68,28 @@ function ViewData(props) {
       ) : (
         <div>
           <Menu />
-          <div>
-            <Description title={id} description={description}></Description>
+          <div className='body'>
+            <Description title={id}
+              description={description}
+              uploadedBy={uploadedBy}
+              price={price}
+              size={size}
+              uploadedDate={uploadedDate}></Description>
           </div>
-          <div>
+          <div className='buttons'>
             <Button className="backButton"
               variant="contained"
               onClick={handleBackButton}
               color="secondary"
               startIcon={<ArrowBackIosNewIcon></ArrowBackIosNewIcon>}
-              sx={{
-                position: 'absolute',
-                bottom: '20px', 
-                left: '28px', 
-              }}>Go Back</Button>
+            >Go Back</Button>
 
             <Button className="purchaseDataButton"
               variant="contained"
               onClick={handlePurchaseButton}
               color="secondary"
-              sx={{
-                position: 'absolute',
-                bottom: '20px', 
-                right: '28px', 
-              }}>Purchase Dataset</Button>
-              
+            >Purchase Dataset</Button>
+
           </div>
         </div>
       )}
@@ -93,7 +103,15 @@ function Description(props) {
     <div>
       <h1 className='title'>{props.title}</h1>
       <h3>Description:</h3>
-      <p className='description'>{props.description}</p>
+      <p>{props.description}</p>
+      <h3>Uploaded By:</h3>
+      <p>{props.uploadedBy}</p>
+      <h3>Uploaded Date:</h3>
+      <p>{props.uploadedDate}</p>
+      <h3>Price:</h3>
+      <p>${props.price}</p>
+      <h3>Size:</h3>
+      <p>{props.size}</p>
 
     </div>
   );

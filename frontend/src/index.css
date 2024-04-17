@@ -6,9 +6,9 @@ html {
 
   /* Custom Background*/
   --s: 111px; /* control the size */
-  --c1: #f5f5f5;
-  --c2: #fcfcfc;
-  --c3: #faf9f9;
+  --c1: #fdfdfd;
+  --c2: #f7f7f7;
+  --c3: #ffecfa;
   
   --_g: var(--c1) 10%,var(--c2) 10.5% 19%,#0000 19.5% 80.5%,var(--c2) 81% 89.5%,var(--c3) 90%;
   --_c: from -90deg at 37.5% 50%,#0000 75%;

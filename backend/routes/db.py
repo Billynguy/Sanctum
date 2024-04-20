@@ -71,7 +71,7 @@ def getPurchasedSets(username):
         response = table.get_item(Key={'username': username}, ProjectionExpression='purchases')
         if 'Item' in response:
             attribute_value = response['Item'].get('purchases', {})
-            return jsonify({'uploads': attribute_value}), 200
+            return jsonify({'purchases': attribute_value}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500 

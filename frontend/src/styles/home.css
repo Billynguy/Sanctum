@@ -1,6 +1,55 @@
-.header {
+
+
+.section {
+    margin: 0px 0px 100px 24px;
+  }
+
+  @keyframes fadeAnimation {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .section-title {
+    font-size: 56px;
+    color:rgb(205, 130, 252);
+  }
+
+  .section-text {
+    margin-right: 500px;
+    font-size: 42px;
+    line-height: 2;
+  }
+
+  .incentives-section-title {
+    text-align: center;
+  }
+
+  .incentives-section-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
     justify-content: center;
+    align-items: center;
+  }
+
+  .incentives-section-bubble {
+    margin: 25px;
+    width: 400px;
+    height: 400px;
+    background-color: rgb(154, 28, 233);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    h3 {
+      margin: 0px;
+    }
+    p {
+      color: white;
+      font-size: 22px;
+      padding: 24px;
+    }
   }

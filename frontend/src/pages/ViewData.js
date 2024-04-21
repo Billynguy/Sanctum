@@ -22,6 +22,7 @@ function ViewData(props) {
   const [purchaseList, setPurchaseList] = useState([]);
   const url = 'http://localhost:5000/fetchData/' + uploadedBy + '-' + id + '.zip';
   const navigate = useNavigate()
+  let isMessageHandled = false;
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,6 +41,26 @@ function ViewData(props) {
         const list = await axios.get('http://localhost:5000/getPurchasedSets/' + session.username)
         setPurchaseList(list.data.purchases)
         // console.log(purchaseList)
+
+        
+        
+        const handleMessage = async (event) => {
+          if (!isMessageHandled && event.data === 'paymentConfirmed') {
+            isMessageHandled = true;
+            window.removeEventListener('message', handleMessage);
+            await addToPurchaseList();
+            navigate('/access');
+            alert('Payment confirmed! The dataset is now downloadable!');
+            console.log('Payment confirmed');
+            
+          }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => {
+          window.removeEventListener('message', handleMessage);
+        };
+
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -48,6 +69,17 @@ function ViewData(props) {
     };
     fetchData();
   }, []);
+
+  const addToPurchaseList = async () => {
+    try {
+      const url = 'http://127.0.0.1:5000//updateUserPurchases/' + uploadedBy + '-' + id + '.zip/' + session.username;
+      const response = await axios.get(url);
+      console.log(response);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleBackButton = () => {
     navigate('/explore')
@@ -70,36 +102,35 @@ function ViewData(props) {
   const handleDownload = async (fileName, user) => {
     let name = user + '-' + fileName + '.zip';
     let routeurl = 'http://127.0.0.1:5000/download';
-    console.log(name)
     try {
-        const response = await axios.post(routeurl, { files: [name] });
+      const response = await axios.post(routeurl, { files: [name] });
 
-    // Parse the response data to get the pre-signed URL
-    const presignedUrl = response.data.presigned_url;
+      // Parse the response data to get the pre-signed URL
+      const presignedUrl = response.data.presigned_url;
 
-    // Use the pre-signed URL to download the file
-    const downloadResponse = await axios.get(presignedUrl, {
+      // Use the pre-signed URL to download the file
+      const downloadResponse = await axios.get(presignedUrl, {
         responseType: 'blob' // Specify the response type as blob
-    });
+      });
 
-    // Create a Blob object from the downloaded file data
-    const blob = new Blob([downloadResponse.data]);
+      // Create a Blob object from the downloaded file data
+      const blob = new Blob([downloadResponse.data]);
 
-    // Create a temporary URL for the Blob object
-    const url = window.URL.createObjectURL(blob);
+      // Create a temporary URL for the Blob object
+      const url = window.URL.createObjectURL(blob);
 
-    // Create a download link and trigger the download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = user + '-' + fileName + '.zip';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url); // Clean up the temporary URL
+      // Create a download link and trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = user + '-' + fileName + '.zip';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url); // Clean up the temporary URL
     }
     catch (error) {
-        console.error(error);
+      console.error(error);
     }
-}
+  }
 
   return (
     <div>

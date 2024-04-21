@@ -168,6 +168,34 @@ def validateItem(filename, username):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@bp.route('/updateUserPurchases/<filename>/<username>')
+def updateUserPurchases(username, filename):
+    uploadId = filename
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('test-userbase')
+
+    try:
+        # Retrieve the existing item
+        response = table.get_item(Key={'username': username})
+        if 'Item' in response:
+            item = response['Item']
+            # Convert 'purchases' set to list
+            purchases = list(item.get('purchases', []))
+            # Append new uploadId to the purchases list
+            purchases.append(uploadId)
+            # Update the item in the DynamoDB table
+            table.update_item(
+                Key={'username': username},
+                UpdateExpression="SET purchases = :p",
+                ExpressionAttributeValues={':p': purchases}
+            )
+            return jsonify({'message': 'Successfully updated'}), 200
+        else:
+            return jsonify({'error': 'Item not found for username: {}'.format(username)}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 ## ToDo   
 @bp.route('/getWallet/<username>', methods=['GET'])
 def getWallet(username):

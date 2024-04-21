@@ -26,7 +26,9 @@ export default function Home() {
           const json = await response.json();
           if (response.status === 200) {
             console.log(json);
+            
             window.close();
+            window.opener.postMessage('paymentConfirmed', '*');
           } else
             console.log(json.error);
         }}

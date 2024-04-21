@@ -13,13 +13,13 @@ function Home() {
       <Menu/>
       <TypedHomeTitle/>
 
-      <div className="section fade">
-        <h2 className="simple-section-title">With Sanctum, healthcare data is made <b>simple</b>.</h2>
+      <div className="section">
+        <h2 className="section-title">With Sanctum, healthcare data is made <b>simple</b>.</h2>
         <p className="section-text">Our marketplace does away with deprecated and inaccessible medical data storage systems. Instead, it provides a modern hub where data <b>contribution</b>, <b>validation</b>, and <b>acquisition</b> are simplified processes.</p>
       </div>
 
-      <div className="section fade">
-        <h2 className="incentives-section-title">All of the perks, none of the compromises.</h2>
+      <div className="section">
+        <h2 className="section-title incentives-section-title">All of the perks, none of the compromises.</h2>
 
         <div className="incentives-section-container">
           <div className="incentives-section-bubble">
@@ -43,8 +43,8 @@ function Home() {
         </div>
       </div>
 
-      <div className="section fade">
-        <h2 className="simple-section-title">enter section header text</h2>
+      <div className="section">
+        <h2 className="section-title">enter section header text</h2>
         <p className="section-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
       </div>
     </div>

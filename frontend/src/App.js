@@ -12,6 +12,7 @@ import PurchasedData from './pages/PurchasedData';
 import PermissionDenied from './pages/PermissionDenied';
 import ViewData from './pages/ViewData';
 import SquarePayment from './pages/SquarePayment';
+import Wallet from './pages/Wallet';
 // import './App.css';
 import { createTheme, alpha, getContrastRatio } from '@mui/material/styles';
 import { ThemeProvider } from "@emotion/react";
@@ -47,6 +48,7 @@ function App() {
         <Route path="/validate" element={<ValidateData/>} />
         <Route path="/view/:id/:uploadedBy" element = {<ViewData/>}/>
         <Route path="/purchase/:id/:uploadedBy" element = {<SquarePayment/>}/>
+        <Route path="/wallet" element = {<Wallet/>}/>
       </Routes>
     </Router>
     </ThemeProvider>

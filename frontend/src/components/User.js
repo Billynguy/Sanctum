@@ -14,7 +14,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import Logout from '@mui/icons-material/Logout';
 import { SessionContext } from "../contexts/SessionContext";
-
+import WalletIcon from '@mui/icons-material/Wallet';
 import "../styles/user.css";
 
 function User() {
@@ -42,6 +42,11 @@ function User() {
     const onAccessMyData = () => {
       setAnchorEl(null);
       navigate('/access');
+    };
+
+    const onWallet = () => {
+      setAnchorEl(null);
+      navigate('/wallet');
     };
 
     const onSignOut = () => {
@@ -94,6 +99,15 @@ function User() {
             <ManageSearchIcon fontSize="small" />
           </ListItemIcon>
           Access My Datasets
+        </MenuItem>
+
+        <Divider />
+
+        <MenuItem onClick={onWallet}>  
+        <ListItemIcon>
+            <WalletIcon fontSize="small" />
+          </ListItemIcon>
+          My Wallet
         </MenuItem>
 
         <Divider />

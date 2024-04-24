@@ -21,7 +21,7 @@ const TypedHomeTitle = () => {
     }
   }, []);
 
-  return <h1 ref={typedElement} style={{ fontSize: '96px' }}></h1>;
+  return <h1 ref={typedElement} style={{ fontSize: '96px', marginLeft: '24px'}}></h1>;
 };
 
 export default TypedHomeTitle;

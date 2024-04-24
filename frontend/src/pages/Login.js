@@ -44,7 +44,7 @@ function Login () {
         <div>
             <Menu/>
             <div className="centered-login-form">
-                <h1>Enter Sanctum</h1>
+                <h1>Log In</h1>
                 <input className="credential-input" value={username} type="text" placeholder="Enter username..." onChange={(event) => setUsername(event.target.value)}></input>
                 <br></br>
                 <input className="credential-input" value={password} type="password" placeholder="Enter password..." onChange={(event) => setPassword(event.target.value)}></input>

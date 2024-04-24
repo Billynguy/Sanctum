@@ -53,8 +53,8 @@ def display_helper(response):
                 logging.warning("Item not found")
                 continue
             dynamoResponse = dynamoResponse['Item']
-            #if not dynamoResponse['validated']:
-            #    continue
+            if not dynamoResponse['validated']:
+                continue
 
             item = dict()
             try:

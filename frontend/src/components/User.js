@@ -13,15 +13,26 @@ import Settings from '@mui/icons-material/Settings';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import Logout from '@mui/icons-material/Logout';
-import { SessionContext } from "../contexts/SessionContext";
 import WalletIcon from '@mui/icons-material/Wallet';
+import UserPool from '../components/UserPool';
 import "../styles/user.css";
 
 function User() {
-  const { session, logout } = useContext(SessionContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  var user = UserPool.getCurrentUser();
+  var sess;
+  if(user != null){
+    user.getSession(function (err, session) { 
+      if (err) {
+        alert(err.message || JSON.stringify(err));
+        window.location.href = '/login';
+        return;
+      }
+      sess = session;
+    });
+  }
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -50,7 +61,7 @@ function User() {
     };
 
     const onSignOut = () => {
-      logout();
+      user.signOut();
       alert("You have been signed out.");
       setAnchorEl(null);
       window.location.href = '/';
@@ -59,7 +70,7 @@ function User() {
     return (
         <div className="user">
 
-            {session.loggedIn && (
+            {(user!=null) && (
             <>
             <Tooltip title="My account">
             <IconButton
@@ -70,7 +81,7 @@ function User() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ bgcolor: "rgb(199,106,255)"}}>{session.username.charAt(0)}</Avatar>
+            <Avatar sx={{ bgcolor: "rgb(199,106,255)"}}>{sess['idToken']['payload']['cognito:username'].charAt(0)}</Avatar>
           </IconButton> </Tooltip> </>)}
 
           <Menu

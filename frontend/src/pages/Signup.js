@@ -139,7 +139,12 @@ const Signup = () => {
         <div>
             <Menu/>
             <div className="centered-login-form">
-                <h1>Join Sanctum</h1>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <h1>Sign Up</h1>
                 {!isSignedUp && (
                     <>
                         <input className="credential-input" value={name} type="text" placeholder="Enter name..." onChange={(event) => setName(event.target.value)}></input>

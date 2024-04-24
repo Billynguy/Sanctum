@@ -2,17 +2,16 @@ import React from 'react';
 import Menu from "../components/Menu";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { SessionContext } from "../contexts/SessionContext";
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 import "../styles/viewData.css";
 import Button from '@mui/material/Button';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import UserPool from '../components/UserPool';
 
 
 //main parent component
 function ViewData(props) {
-  const { session } = useContext(SessionContext)
   const { id, uploadedBy } = useParams();
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
@@ -22,6 +21,19 @@ function ViewData(props) {
   const [purchaseList, setPurchaseList] = useState([]);
   const url = 'http://localhost:5000/fetchData/' + uploadedBy + '-' + id + '.zip';
   const navigate = useNavigate()
+
+  var user = UserPool.getCurrentUser();
+  var sess;
+  if(user != null){
+    user.getSession(function (err, session) { 
+      if (err) {
+        alert(err.message || JSON.stringify(err));
+        return;
+      }
+      sess = session;
+    });
+  }
+
   let isMessageHandled = false;
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +50,7 @@ function ViewData(props) {
         // Format the date as desired
         const formattedDate = parsedDate.toLocaleDateString();
         setUploadedDate(formattedDate);
-        const list = await axios.get('http://localhost:5000/getPurchasedSets/' + session.username)
+        const list = await axios.get('http://localhost:5000/getPurchasedSets/' + sess['idToken']['payload']['cognito:username'])
         setPurchaseList(list.data.purchases)
         // console.log(purchaseList)
 
@@ -72,7 +84,7 @@ function ViewData(props) {
 
   const addToPurchaseList = async () => {
     try {
-      const url = 'http://127.0.0.1:5000//updateUserPurchases/' + uploadedBy + '-' + id + '.zip/' + session.username;
+      const url = 'http://127.0.0.1:5000//updateUserPurchases/' + uploadedBy + '-' + id + '.zip/' + sess['idToken']['payload']['cognito:username'];
       const response = await axios.get(url);
       console.log(response);
     }

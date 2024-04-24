@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SessionContext } from "../contexts/SessionContext";
 import axios from 'axios';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -7,14 +6,31 @@ import { useNavigate } from 'react-router-dom';
 import Menu from "../components/Menu";
 import User from "../components/User";
 import "../styles/uploadData.css";
+import UserPool from '../components/UserPool';
 
 function NewUploadData() {
-    const { session } = useContext(SessionContext)
     const navigate = useNavigate()
     const [files, setFiles] = useState([]);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [status, setStatus] = useState('');
     const [fileForm, setFileForm] = useState(false);
+
+    var user = UserPool.getCurrentUser();
+    var sess;
+    if(user != null){
+      user.getSession(function (err, session) { 
+        if (err) {
+          alert(err.message || JSON.stringify(err));
+          window.location.href = '/login';
+          return;
+        }
+        sess = session;
+      });
+    }
+    else{
+        window.location.href = '/login';
+    }
+
     const [fileFormData, setFileFormData] = useState({
         user: '',
         filename: '',
@@ -42,23 +58,18 @@ function NewUploadData() {
     });
 
     useEffect(() => {
-        if (session.loggedIn) {
+        setFileFormData(prevState => ({
+            ...prevState,
+            user: sess['idToken']['payload']['cognito:username'],
+        }));
+        if (files.length > 0) {
+            const file = files[0];
             setFileFormData(prevState => ({
                 ...prevState,
-                user: session.username
+                filename: file.name,
+                format: file.type,
+                size: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
             }));
-            if (files.length > 0) {
-                const file = files[0];
-                setFileFormData(prevState => ({
-                    ...prevState,
-                    filename: file.name,
-                    format: file.type,
-                    size: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
-                }));
-            }
-        }
-        else{
-            navigate('/login')
         }
     }, [files]);
 

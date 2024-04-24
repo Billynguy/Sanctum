@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Menu from "../components/Menu";
 import ValidatorTable from "../components/ValidatorTable";
 import { formatFileSize, datetimeFormat } from '../components/utils';
+import User from "../components/User";
 
 function ValidateData(){
     const { session } = useContext(SessionContext);
@@ -47,6 +48,7 @@ function ValidateData(){
     return (
         <div>
             <Menu/>
+            <User></User>
             <h1>Validate Data Page</h1>
             <ValidatorTable data={data} loading={loading} onValidation = {handleTableReload}></ValidatorTable>
         </div>

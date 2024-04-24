@@ -8,6 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import "../styles/viewData.css";
 import Button from '@mui/material/Button';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import User from '../components/User';
 
 
 //main parent component
@@ -141,6 +142,7 @@ function ViewData(props) {
         </div>
       ) : (
         <div>
+          <User></User>
           <Menu />
           <div className='body'>
             <Description title={id}

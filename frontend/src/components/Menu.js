@@ -115,7 +115,7 @@ export default function TemporaryDrawer() {
     const userType = loggedIn ? sess['idToken']['payload']['custom:user-type'] : null;
 
     const DrawerList = (
-        <Box sx={{ width: 500 }} role="presentation" onClick={toggleDrawer(false)}>
+        <Box sx={{ width: 300 }} role="presentation" onClick={toggleDrawer(false)}>
             <List>
                 <ListItem>
                     <ListItemButton>
@@ -173,6 +173,8 @@ export default function TemporaryDrawer() {
         </Box>
     );
 
+
+
     return (
         <div>
             <Button onClick={toggleDrawer(true)}><DensitySmallIcon style={{ color: 'rgb(199,106,255)' }}/></Button>
@@ -180,7 +182,7 @@ export default function TemporaryDrawer() {
                 {DrawerList}
             </Drawer>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <img src="/assets/icons8-dna-48.png" alt="DNA Icon" />
+                <Link to="/"><img src="/assets/sanctum-logo.png" alt="Sanctum Logo"/></Link> 
             </div>
         </div>
     );

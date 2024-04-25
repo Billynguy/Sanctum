@@ -112,6 +112,7 @@ export default function TemporaryDrawer() {
     }
 
     const loggedIn = (user!=null);
+    const userType = loggedIn ? sess['idToken']['payload']['custom:user-type'] : null;
 
     const DrawerList = (
         <Box sx={{ width: 500 }} role="presentation" onClick={toggleDrawer(false)}>
@@ -158,12 +159,12 @@ export default function TemporaryDrawer() {
                             pageName="Upload Data"
                         />
 
-                        {sess['idToken']['payload']['custom:user-type'] === 'Validator' && (
+                        {userType === 'Validator' && (
                                 <ConditionalLinkListItem
                                 condition={loggedIn}
                                 route="/validate"
                                 pageName="Validate Data"
-                                type={sess['idToken']['payload']['custom:user-type']}
+                                type={userType}
                             />
                         )} 
                     </div>

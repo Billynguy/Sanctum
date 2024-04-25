@@ -3,6 +3,7 @@ import Menu from "../components/Menu";
 import ValidatorTable from "../components/ValidatorTable";
 import { formatFileSize, datetimeFormat } from '../components/utils';
 import UserPool from '../components/UserPool';
+import User from "../components/User";
 
 function ValidateData(){
     const [data, setData] = useState([]);
@@ -57,6 +58,7 @@ function ValidateData(){
 
     return (
         <div>
+            <User/>
             <Menu/>
             <h1>Validate Data Page</h1>
             <ValidatorTable data={data} loading={loading} onValidation = {handleTableReload}></ValidatorTable>

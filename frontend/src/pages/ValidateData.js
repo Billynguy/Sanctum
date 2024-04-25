@@ -1,19 +1,33 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SessionContext } from "../contexts/SessionContext";
-import { useNavigate } from 'react-router-dom';
 import Menu from "../components/Menu";
 import ValidatorTable from "../components/ValidatorTable";
 import { formatFileSize, datetimeFormat } from '../components/utils';
+import UserPool from '../components/UserPool';
 import User from "../components/User";
 
 function ValidateData(){
-    const { session } = useContext(SessionContext);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate()
     const [tableKey, setTableKey] = useState(0);
+
+    var user = UserPool.getCurrentUser();
+    var sess;
+    if(user != null){
+      user.getSession(function (err, session) { 
+        if (err) {
+          alert(err.message || JSON.stringify(err));
+          window.location.href = '/login';
+          return;
+        }
+        sess = session;
+      });
+    }
+    else{
+        window.location.href = '/login';
+    }
+
     useEffect(() => {
-        if (session.loggedIn && session.userType==='Validator') {
+        if (sess['idToken']['payload']['custom:user-type'] ==='Validator') {
             const fetchData = async () => {
                 try {
                     const response = await fetch('http://127.0.0.1:5000/display_nonvalidated_files');
@@ -35,9 +49,6 @@ function ValidateData(){
     
             fetchData();
         }
-        else{
-            navigate('/login')
-        }
     }, [tableKey]);
 
     const handleTableReload = () => {
@@ -47,8 +58,8 @@ function ValidateData(){
 
     return (
         <div>
+            <User/>
             <Menu/>
-            <User></User>
             <h1>Validate Data Page</h1>
             <ValidatorTable data={data} loading={loading} onValidation = {handleTableReload}></ValidatorTable>
         </div>

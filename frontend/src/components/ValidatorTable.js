@@ -1,11 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { useNavigate } from "react-router-dom";
 import '../styles/dataTable.css';
-import { SessionContext } from "../contexts/SessionContext";
 import Button from '@mui/material/Button';
 import axios from 'axios';
-
+import UserPool from '../components/UserPool';
 
 
 function getRowId(row) {
@@ -13,6 +11,22 @@ function getRowId(row) {
 }
 
 function ValidatorTable({ data, loading, onValidation }) {
+    var user = UserPool.getCurrentUser();
+    var sess;
+    if(user != null){
+      user.getSession(function (err, session) { 
+        if (err) {
+          alert(err.message || JSON.stringify(err));
+          window.location.href = '/login';
+          return;
+        }
+        sess = session;
+      });
+    }
+    else{
+        window.location.href = '/login';
+    }
+    
     const columns = [
         { field: 'name', headerName: 'Name', flex: 1, },
         { field: 'description', headerName: 'Description', flex: 2 },
@@ -37,8 +51,6 @@ function ValidatorTable({ data, loading, onValidation }) {
             ),
         },
     ];
-    const { session } = useContext(SessionContext);
-    const username = session.username
 
     const [searchTerm, setSearchTerm] = useState('');
     const initialPaginationState = {
@@ -46,13 +58,12 @@ function ValidatorTable({ data, loading, onValidation }) {
             paginationModel: { page: 0, pageSize: 10 },
         },
     };
-    const navigate = useNavigate()
 
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
     };
     const handleValidate = (fileName, user) => {
-        let url = 'http://127.0.0.1:5000/validateItem/' + user + '-' + fileName + '.zip/' + username
+        let url = 'http://127.0.0.1:5000/validateItem/' + user + '-' + fileName + '.zip/' + sess['idToken']['payload']['cognito:username'];
         const confirmed = window.confirm('Are u sure you would like to validate this item')
         if (confirmed) {
             axios.get(url)

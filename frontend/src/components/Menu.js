@@ -8,8 +8,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import DensitySmallIcon from '@mui/icons-material/DensitySmall';
-import { SessionContext } from "../contexts/SessionContext";
 import { Link } from 'react-router-dom';
+import UserPool from '../components/UserPool';
 
 const ConditionalLinkListItem = ({ condition, route, pageName, type }) => {
     const handleButtonClick = () => {
@@ -95,12 +95,24 @@ const ConditionalLinkListItem = ({ condition, route, pageName, type }) => {
 
 export default function TemporaryDrawer() {
     const [open, setOpen] = React.useState(false);
-    const { session } = useContext(SessionContext);
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
     };
 
-    const loggedIn = sessionStorage.getItem('userLoggedIn') === "true";
+    var user = UserPool.getCurrentUser();
+    var sess;
+    if(user != null){
+      user.getSession(function (err, session) { 
+        if (err) {
+          alert(err.message || JSON.stringify(err));
+          return;
+        }
+        sess = session;
+      });
+    }
+
+    const loggedIn = (user!=null);
+    const userType = loggedIn ? sess['idToken']['payload']['custom:user-type'] : null;
 
     const DrawerList = (
         <Box sx={{ width: 300 }} role="presentation" onClick={toggleDrawer(false)}>
@@ -126,7 +138,7 @@ export default function TemporaryDrawer() {
                         </Link>
                     </ListItemButton>
                 </ListItem>
-                {!session.loggedIn && (
+                {!loggedIn && (
                     <ListItem>
                         <ListItemButton>
                             <Link to="/login">
@@ -139,20 +151,20 @@ export default function TemporaryDrawer() {
                     </ListItem>
                 )}
 
-                {session.loggedIn && (
+                {loggedIn && (
                     <div>
                         <ConditionalLinkListItem
-                            condition={session.loggedIn}
+                            condition={loggedIn}
                             route="/upload"
                             pageName="Upload Data"
                         />
 
-                        {session.userType === 'Validator' && (
+                        {userType === 'Validator' && (
                                 <ConditionalLinkListItem
-                                condition={session.loggedIn}
+                                condition={loggedIn}
                                 route="/validate"
                                 pageName="Validate Data"
-                                type={session.userType}
+                                type={userType}
                             />
                         )} 
                     </div>

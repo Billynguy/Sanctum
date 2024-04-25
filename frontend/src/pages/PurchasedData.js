@@ -2,18 +2,33 @@ import React, { useState, useEffect, useContext } from 'react';
 import Menu from '../components/Menu';
 import User from "../components/User";
 import DataTable from '../components/DataTable';
-import { SessionContext } from "../contexts/SessionContext";
 import { formatFileSize, datetimeFormat } from '../components/utils';
+import UserPool from '../components/UserPool';
 
 function PurchasedData() {
-  const { session } = useContext(SessionContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  var user = UserPool.getCurrentUser();
+  var sess;
+  if(user != null){
+    user.getSession(function (err, session) { 
+      if (err) {
+        alert(err.message || JSON.stringify(err));
+        window.location.href = '/login';
+        return;
+      }
+      sess = session;
+    });
+  }
+  else{
+    window.location.href = '/login';
+}
 
   useEffect(() => {
     const fetchPurchasedData = async () => {
       try {
-        const username = session.username
+        const username = sess['idToken']['payload']['cognito:username'];
         const response = await fetch(`http://127.0.0.1:5000/display_purchases?username=${username}`);
         const names = await response.json();
         const data = names.map(obj => ({

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {Link} from "react-router-dom";
 import Menu from "../components/Menu";
 import { CognitoUserAttribute, CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
-import { SessionContext } from "../contexts/SessionContext";
 import UserPool from "../components/UserPool";
 import { Button } from "@mui/material";
 import 'react-phone-number-input/style.css';
@@ -30,7 +29,6 @@ const Signup = () => {
     const [resendMessage, setResendMessage] = useState('');
     const [userType, setUserType] = useState('');
     const navigate = useNavigate()
-    const { login } = useContext(SessionContext);
 
 
     const onSubmit = (event) => {
@@ -104,14 +102,13 @@ const Signup = () => {
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function(result) {
                 alert("user " + cognitoUser.getUsername() + " has successfully logged in.");
-                const userData = {
-                    username: cognitoUser.getUsername(),
-                    userType: result.idToken.payload['custom:user-type'],
-                    email: result.idToken.payload.email,
-                    phone: result.idToken.payload.phone_number,
-                    region: result.idToken.payload.locale
-                };
-                login(userData);
+                cognitoUser.getSession(function (err, session) { 
+                    if (err) {
+                      alert(err.message || JSON.stringify(err));
+                      return;
+                    }
+                    console.log('session validity: ' + session.isValid());
+                  });
                 navigate('/')
         },
             onFailure: function(err) {
